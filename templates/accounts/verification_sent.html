@@ -1,0 +1,318 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Email Sent - NextSlot</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+    .verification-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+    
+    .verification-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        max-width: 480px;
+        width: 100%;
+        padding: 3rem;
+        text-align: center;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .email-icon-wrapper {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 2rem;
+        position: relative;
+    }
+    
+    .email-icon-circle {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.4);
+        }
+        50% {
+            box-shadow: 0 0 0 20px rgba(13, 148, 136, 0);
+        }
+    }
+    
+    .email-icon-circle i {
+        font-size: 3.5rem;
+        color: white;
+    }
+    
+    .check-badge {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 36px;
+        height: 36px;
+        background: #10b981;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid white;
+        animation: bounceIn 0.6s ease-out 0.3s both;
+    }
+    
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    .check-badge i {
+        color: white;
+        font-size: 1rem;
+    }
+    
+    .verification-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
+    }
+    
+    .verification-subtitle {
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .email-highlight {
+        background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 600;
+    }
+    
+    .steps-container {
+        background: #f9fafb;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+    
+    .step-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .step-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .step-number {
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-right: 1rem;
+    }
+    
+    .step-text {
+        color: #4b5563;
+        font-size: 0.95rem;
+        padding-top: 3px;
+    }
+    
+    .btn-back {
+        background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+        border: none;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(13, 148, 136, 0.3);
+        color: white;
+    }
+    
+    .resend-link {
+        color: #0d9488;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    
+    .resend-link:hover {
+        color: #0891b2;
+        text-decoration: underline;
+    }
+    
+    .help-text {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        margin-top: 1.5rem;
+    }
+    
+    .spam-notice {
+        background: #fef3c7;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .spam-notice i {
+        color: #d97706;
+        font-size: 1.25rem;
+    }
+    
+    .spam-notice span {
+        color: #92400e;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+    
+    @media (max-width: 576px) {
+        .verification-card {
+            padding: 2rem 1.5rem;
+            border-radius: 20px;
+        }
+        
+        .email-icon-wrapper {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .email-icon-circle {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .email-icon-circle i {
+            font-size: 2.75rem;
+        }
+        
+        .verification-title {
+            font-size: 1.5rem;
+        }
+        
+        .verification-subtitle {
+            font-size: 1rem;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="verification-page">
+    <div class="verification-card">
+        <!-- Email Icon with Check Badge -->
+        <div class="email-icon-wrapper">
+            <div class="email-icon-circle">
+                <i class="bi bi-envelope-paper"></i>
+            </div>
+            <div class="check-badge">
+                <i class="bi bi-check-lg"></i>
+            </div>
+        </div>
+        
+        <!-- Title -->
+        <h1 class="verification-title">Check Your Email</h1>
+        <p class="verification-subtitle">
+            We've sent a verification link to your email address. 
+            Click the link to <span class="email-highlight">activate your account</span>.
+        </p>
+        
+        <!-- Steps -->
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <div class="step-text">Open your email inbox</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <div class="step-text">Find the email from us (check spam if needed)</div>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <div class="step-text">Click the verification link inside</div>
+            </div>
+        </div>
+        
+        <!-- Spam Notice -->
+        <div class="spam-notice">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>Can't find the email? Check your <strong>spam</strong> or <strong>promotions</strong> folder.</span>
+        </div>
+        
+        <!-- Back to Login Button -->
+        <a href="{% url 'accounts:login' %}" class="btn-back">
+            <i class="bi bi-arrow-left me-2"></i>Back to Login
+        </a>
+        
+        <!-- Help Text -->
+        <p class="help-text">
+            Still having trouble? 
+            <a href="{% url 'accounts:login' %}" class="resend-link">Try again</a> or contact support.
+        </p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

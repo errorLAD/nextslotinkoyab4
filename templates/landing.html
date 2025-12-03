@@ -1,0 +1,1069 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextSlot - Appointment Booking Made Simple</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #14b8a6;
+            --secondary: #f97316;
+            --secondary-dark: #ea580c;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --dark: #0f172a;
+            --dark-soft: #1e293b;
+            --gray-900: #111827;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-500: #6b7280;
+            --gray-400: #9ca3af;
+            --gray-200: #e5e7eb;
+            --gray-100: #f3f4f6;
+            --gray-50: #f9fafb;
+            --white: #ffffff;
+            --gradient-primary: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
+            --gradient-accent: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--white);
+            overflow-x: hidden;
+        }
+        
+        /* Navbar */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .navbar-brand .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+        }
+        
+        .navbar-brand .logo-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+        
+        .nav-link-custom {
+            color: var(--gray-600) !important;
+            font-weight: 500;
+            padding: 10px 20px !important;
+            transition: all 0.3s;
+        }
+        
+        .nav-link-custom:hover {
+            color: var(--primary) !important;
+        }
+        
+        .btn-login {
+            padding: 10px 25px;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-login:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-signup {
+            padding: 10px 25px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(13, 148, 136, 0.35);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(180deg, var(--gray-50) 0%, var(--white) 100%);
+            position: relative;
+            padding-top: 80px;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(13, 148, 136, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -300px;
+            right: -200px;
+        }
+        
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(8, 145, 178, 0.1) 100%);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 25px;
+            border: 1px solid rgba(13, 148, 136, 0.2);
+        }
+        
+        .hero-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            color: var(--dark);
+            line-height: 1.15;
+            margin-bottom: 25px;
+            letter-spacing: -0.02em;
+        }
+        
+        .hero-title span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--gray-500);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            max-width: 520px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-hero-primary {
+            padding: 18px 38px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: none;
+            box-shadow: 0 4px 15px rgba(13, 148, 136, 0.25);
+        }
+        
+        .btn-hero-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.35);
+            color: white;
+        }
+        
+        .btn-hero-secondary {
+            padding: 18px 38px;
+            background: var(--white);
+            color: var(--dark);
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: 2px solid var(--gray-200);
+        }
+        
+        .btn-hero-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(13, 148, 136, 0.05);
+        }
+        
+        .hero-image {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .floating-card {
+            position: absolute;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .floating-card.card-1 {
+            top: 10%;
+            right: -30px;
+            animation-delay: 0s;
+        }
+        
+        .floating-card.card-2 {
+            bottom: 15%;
+            left: -40px;
+            animation-delay: 1.5s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+        }
+        
+        .card-icon.green {
+            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+            color: white;
+        }
+        
+        .card-icon.purple {
+            background: var(--gradient-accent);
+            color: white;
+        }
+        
+        .card-title {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        .card-text {
+            color: var(--gray-500);
+            font-size: 0.85rem;
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 120px 0;
+            background: var(--white);
+        }
+        
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(251, 146, 60, 0.1) 100%);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+        
+        .section-title {
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 15px;
+            letter-spacing: -0.02em;
+        }
+        
+        .section-subtitle {
+            font-size: 1.15rem;
+            color: var(--gray-500);
+            max-width: 600px;
+            margin: 0 auto 60px;
+            line-height: 1.7;
+        }
+        
+        .feature-card {
+            background: var(--gray-50);
+            border-radius: 24px;
+            padding: 40px;
+            height: 100%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+        }
+        
+        .feature-card:hover {
+            background: var(--white);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+            border-color: var(--gray-200);
+            transform: translateY(-8px);
+        }
+        
+        .feature-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9rem;
+            margin-bottom: 28px;
+        }
+        
+        .feature-icon.teal {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .feature-icon.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .feature-icon.orange {
+            background: var(--gradient-secondary);
+            color: white;
+        }
+        
+        .feature-icon.indigo {
+            background: var(--gradient-accent);
+            color: white;
+        }
+        
+        .feature-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 14px;
+        }
+        
+        .feature-text {
+            color: var(--gray-500);
+            line-height: 1.75;
+            font-size: 1rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 0;
+            background: var(--gradient-dark);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -200px;
+            right: -100px;
+        }
+        
+        .cta-section::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -100px;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+        }
+        
+        .cta-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+        
+        .cta-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 45px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+        
+        .btn-cta {
+            padding: 20px 50px;
+            background: var(--gradient-secondary);
+            color: white;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
+        }
+        
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 50px rgba(249, 115, 22, 0.4);
+            color: white;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 80px 0 40px;
+        }
+        
+        .footer-brand {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-brand .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .footer-brand .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        .footer-text {
+            color: var(--gray-400);
+            line-height: 1.8;
+            max-width: 300px;
+        }
+        
+        .footer-title {
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .footer-link {
+            color: var(--gray-400);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 14px;
+            transition: all 0.3s;
+        }
+        
+        .footer-link:hover {
+            color: var(--primary-light);
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 50px;
+            padding-top: 30px;
+            text-align: center;
+            color: var(--gray-500);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 2.75rem;
+            }
+            
+            .hero-image {
+                margin-top: 60px;
+            }
+            
+            .floating-card {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.25rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .cta-title {
+                font-size: 2rem;
+            }
+            
+            .features-section {
+                padding: 80px 0;
+            }
+            
+            .cta-section {
+                padding: 80px 0;
+            }
+        }
+        
+        /* Custom Hamburger Menu */
+        .navbar-toggler {
+            border: none;
+            padding: 10px;
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: none !important;
+            width: 22px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s;
+            display: block;
+        }
+        
+        .navbar-toggler span:nth-child(1),
+        .navbar-toggler span:nth-child(2),
+        .navbar-toggler span:nth-child(3) {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        
+        .navbar-toggler[aria-expanded="true"] span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .navbar-toggler[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .navbar-toggler[aria-expanded="true"] span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+        
+        @media (max-width: 991px) {
+            .navbar-collapse {
+                background: white;
+                padding: 20px;
+                border-radius: 20px;
+                margin-top: 15px;
+                box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+                border: 1px solid var(--gray-100);
+            }
+            
+            .navbar-nav {
+                margin-bottom: 20px;
+            }
+            
+            .nav-link-custom {
+                padding: 15px 20px !important;
+                border-radius: 12px;
+                margin-bottom: 5px;
+            }
+            
+            .nav-link-custom:hover {
+                background: var(--gray-50);
+            }
+            
+            .d-flex.gap-3 {
+                flex-direction: column;
+                gap: 10px !important;
+            }
+            
+            .btn-login, .btn-signup {
+                text-align: center;
+                padding: 14px 25px;
+            }
+        }
+        
+        /* Mockup Card Styling */
+        .mockup-container {
+            background: var(--gradient-primary);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 30px 80px rgba(13, 148, 136, 0.25);
+        }
+        
+        .mockup-inner {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+        }
+        
+        .mockup-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+        }
+        
+        .mockup-icon {
+            width: 52px;
+            height: 52px;
+            background: var(--gradient-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .mockup-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .mockup-title {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .mockup-subtitle {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+        
+        .mockup-service {
+            background: var(--gray-50);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+        
+        .mockup-service-name {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .mockup-service-info {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+        
+        .mockup-dates {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        
+        .mockup-date {
+            flex: 1;
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+        
+        .mockup-date.active {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+        }
+        
+        .mockup-date.active .date-num {
+            color: var(--primary);
+        }
+        
+        .mockup-date:not(.active) {
+            background: var(--gray-50);
+        }
+        
+        .date-num {
+            font-weight: 700;
+            color: var(--gray-700);
+            font-size: 1.1rem;
+        }
+        
+        .date-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
+        .mockup-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
+                    </svg>
+                </div>
+                Next<span>Slot</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{% url 'subscriptions:pricing' %}">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom" href="{% url 'appointments:book_providers' %}">
+                            <i class="bi bi-shop-window"></i> Store
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex gap-3 align-items-center">
+                    <a href="{% url 'accounts:login' %}" class="btn-login">Login</a>
+                    <a href="{% url 'accounts:register_provider' %}" class="btn-signup">
+                        <i class="bi bi-shop"></i> Provider Sign Up
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <div class="hero-badge">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                            #1 Appointment Booking Platform
+                        </div>
+                        
+                        <h1 class="hero-title">
+                            Grow Your Business with <span>Smart Booking</span>
+                        </h1>
+                        
+                        <p class="hero-subtitle">
+                            Create your professional booking page in minutes. Accept appointments 24/7, reduce no-shows, and delight your customers.
+                        </p>
+                        
+                        <div class="hero-buttons">
+                            <a href="{% url 'accounts:register_provider' %}" class="btn-hero-primary">
+                                <i class="bi bi-shop"></i>
+                                Service Provider Sign Up
+                            </a>
+                            <a href="{% url 'accounts:register_client' %}" class="btn-hero-secondary">
+                                <i class="bi bi-person-plus"></i>
+                                Client Sign Up
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="hero-image text-center">
+                        <!-- Modern Mockup -->
+                        <div class="mockup-container">
+                            <div class="mockup-inner">
+                                <div class="mockup-header">
+                                    <div class="mockup-icon">
+                                        <i class="bi bi-calendar-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="mockup-title">Your Business Name</div>
+                                        <div class="mockup-subtitle">Professional Services</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mockup-service">
+                                    <div class="mockup-service-name">Hair Cut & Style</div>
+                                    <div class="mockup-service-info">45 min • ₹500</div>
+                                </div>
+                                
+                                <div class="mockup-dates">
+                                    <div class="mockup-date active">
+                                        <div class="date-num">15</div>
+                                        <div class="date-label">Dec</div>
+                                    </div>
+                                    <div class="mockup-date">
+                                        <div class="date-num">16</div>
+                                        <div class="date-label">Dec</div>
+                                    </div>
+                                    <div class="mockup-date">
+                                        <div class="date-num">17</div>
+                                        <div class="date-label">Dec</div>
+                                    </div>
+                                </div>
+                                
+                                <button class="mockup-btn">Book Appointment</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Cards -->
+                        <div class="floating-card card-1" style="top: 5%; right: 0;">
+                            <div class="card-icon green">
+                                <i class="bi bi-check-lg"></i>
+                            </div>
+                            <div class="card-title">Booking Confirmed!</div>
+                            <div class="card-text">Dec 15, 10:00 AM</div>
+                        </div>
+                        
+                        <div class="floating-card card-2" style="bottom: 20%; left: 0;">
+                            <div class="card-icon purple">
+                                <i class="bi bi-bell"></i>
+                            </div>
+                            <div class="card-title">Reminder Sent</div>
+                            <div class="card-text">24 hours before</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="text-center">
+                <div class="section-badge">
+                    <i class="bi bi-stars"></i> Why Choose Us
+                </div>
+                <h2 class="section-title">Everything You Need to Succeed</h2>
+                <p class="section-subtitle">Powerful features to help you manage appointments, grow your business, and delight your customers.</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon teal">
+                            <i class="bi bi-calendar2-check"></i>
+                        </div>
+                        <h3 class="feature-title">Online Booking</h3>
+                        <p class="feature-text">Let customers book appointments 24/7 from your personalized booking page.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon green">
+                            <i class="bi bi-bell"></i>
+                        </div>
+                        <h3 class="feature-title">Auto Reminders</h3>
+                        <p class="feature-text">Reduce no-shows with automatic email and SMS reminders to customers.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon orange">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3 class="feature-title">Team Management</h3>
+                        <p class="feature-text">Add team members with individual schedules and service assignments.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <div class="feature-icon indigo">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <h3 class="feature-title">Analytics</h3>
+                        <p class="feature-text">Track bookings, revenue, and customer insights with detailed reports.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Transform Your Business?</h2>
+                <p class="cta-subtitle">Join thousands of service providers who trust NextSlot to manage their appointments.</p>
+                <a href="{% url 'accounts:register_provider' %}" class="btn-cta">
+                    <i class="bi bi-shop"></i>
+                    Service Provider Sign Up
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-brand">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
+                            </svg>
+                        </div>
+                        Next<span>Slot</span>
+                    </div>
+                    <p class="footer-text">The modern appointment booking platform for service businesses. Simple, powerful, and reliable.</p>
+                </div>
+                
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">Product</h5>
+                    <a href="#features" class="footer-link">Features</a>
+                    <a href="{% url 'subscriptions:pricing' %}" class="footer-link">Pricing</a>
+                </div>
+                
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">Company</h5>
+                    <a href="#" class="footer-link">About Us</a>
+                    <a href="#" class="footer-link">Contact</a>
+                </div>
+                
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">Account</h5>
+                    <a href="{% url 'accounts:login' %}" class="footer-link">Login</a>
+                    <a href="{% url 'accounts:register_provider' %}" class="footer-link">Sign Up</a>
+                    <a href="{% url 'accounts:register_client' %}" class="footer-link">Client Sign Up</a>
+                </div>
+                
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">Legal</h5>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 NextSlot. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

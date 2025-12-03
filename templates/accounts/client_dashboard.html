@@ -1,0 +1,710 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - Dashboard</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            top: -100px;
+            right: -50px;
+        }
+        
+        .dashboard-header::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            bottom: -80px;
+            left: 10%;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        .welcome-text {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            border: 4px solid rgba(255,255,255,0.3);
+        }
+        
+        /* Stats Cards */
+        .stats-row {
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .stat-icon.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .stat-icon.orange {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 40px 0 60px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: #667eea;
+        }
+        
+        /* Appointment Cards */
+        .appointment-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .appointment-card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .appt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .appt-date-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 70px;
+        }
+        
+        .appt-date-day {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .appt-date-month {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+        
+        .appt-status {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-completed {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .appt-details {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .appt-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .appt-service-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .appt-provider {
+            color: #6b7280;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .appt-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+            font-size: 0.95rem;
+            margin-top: 10px;
+        }
+        
+        .appt-time i {
+            color: #667eea;
+        }
+        
+        .appt-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn-view {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .btn-cancel {
+            padding: 10px 20px;
+            background: white;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #faf5ff 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .empty-icon i {
+            font-size: 2.5rem;
+            color: #667eea;
+        }
+        
+        .empty-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .empty-text {
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+        
+        .btn-book {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-book:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        /* Past Appointments */
+        .past-appointments {
+            margin-top: 40px;
+        }
+        
+        .past-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-left: 4px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .past-card.completed {
+            border-left-color: #10b981;
+        }
+        
+        .past-card.cancelled {
+            border-left-color: #ef4444;
+        }
+        
+        .past-info {
+            flex: 1;
+        }
+        
+        .past-service {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .past-meta {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        .btn-rebook {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-rebook:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .welcome-text {
+                font-size: 1.6rem;
+            }
+            
+            .stats-row {
+                margin-top: -20px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .appt-details {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .appt-actions {
+                width: 100%;
+            }
+            
+            .appt-actions a {
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+            }
+            
+            .dashboard-header {
+                padding-top: 80px;
+            }
+            
+            .mobile-header {
+                display: flex !important;
+            }
+        }
+        
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            padding: 0 15px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-header .back-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .mobile-header .back-link:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .mobile-header .title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .mobile-header .logout-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .mobile-header .logout-link:hover {
+            background: rgba(239, 68, 68, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="/" class="back-link">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <span class="title">My Bookings</span>
+        <a href="{% url 'accounts:logout' %}" class="logout-link">
+            <i class="bi bi-box-arrow-right"></i>
+        </a>
+    </div>
+    
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="back-btn">
+                    <i class="bi bi-arrow-left"></i> Back to Home
+                </a>
+                
+                <div class="d-flex align-items-center gap-4">
+                    <div class="user-avatar">
+                        {{ request.user.first_name|slice:":1"|upper|default:"U" }}
+                    </div>
+                    <div>
+                        <h1 class="welcome-text">Welcome back, {{ request.user.first_name|default:request.user.email }}!</h1>
+                        <p class="welcome-subtitle">Here's an overview of your appointments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Stats -->
+    <div class="container stats-row">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">{{ upcoming_appointments|length }}</div>
+                        <div class="stat-label">Upcoming Appointments</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">{{ past_appointments|length }}</div>
+                        <div class="stat-label">Past Appointments</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="bi bi-heart"></i>
+                    </div>
+                    <div>
+                        <div class="stat-number">{{ favorite_providers|length }}</div>
+                        <div class="stat-label">Favorite Providers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Upcoming Appointments -->
+            <h2 class="section-title">
+                <i class="bi bi-calendar-event"></i> Upcoming Appointments
+            </h2>
+            
+            {% if upcoming_appointments %}
+                {% for appt in upcoming_appointments %}
+                <div class="appointment-card">
+                    <div class="appt-header">
+                        <div class="appt-date-badge">
+                            <div class="appt-date-day">{{ appt.appointment_date|date:"d" }}</div>
+                            <div class="appt-date-month">{{ appt.appointment_date|date:"M" }}</div>
+                        </div>
+                        <span class="appt-status {% if appt.status == 'confirmed' %}status-confirmed{% elif appt.status == 'pending' %}status-pending{% else %}status-{{ appt.status }}{% endif %}">
+                            {% if appt.status == 'confirmed' %}✓ Confirmed{% elif appt.status == 'pending' %}⏳ Pending{% else %}{{ appt.get_status_display }}{% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="appt-details">
+                        <div class="appt-info">
+                            <div class="appt-service-name">{{ appt.service.name }}</div>
+                            <div class="appt-provider">
+                                <i class="bi bi-building"></i> {{ appt.service_provider.business_name }}
+                            </div>
+                            <div class="appt-time">
+                                <i class="bi bi-clock"></i> {{ appt.appointment_time|time:"g:i A" }}
+                                {% if appt.staff_member %} • with {{ appt.staff_member.name }}{% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="appt-actions">
+                            <a href="{% url 'accounts:appointment_detail_client' appt.id %}" class="btn-view">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                            {% if appt.can_be_cancelled %}
+                            <a href="{% url 'accounts:cancel_appointment_client' appt.id %}" class="btn-cancel">
+                                Cancel
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+                    <h3 class="empty-title">No Upcoming Appointments</h3>
+                    <p class="empty-text">You don't have any scheduled appointments yet.</p>
+                    <a href="/" class="btn-book">
+                        <i class="bi bi-plus-lg"></i> Book an Appointment
+                    </a>
+                </div>
+            {% endif %}
+            
+            <!-- Past Appointments -->
+            {% if past_appointments %}
+            <div class="past-appointments">
+                <h2 class="section-title">
+                    <i class="bi bi-clock-history"></i> Past Appointments
+                </h2>
+                
+                {% for appt in past_appointments %}
+                <div class="past-card {% if appt.status == 'completed' %}completed{% elif appt.status == 'cancelled' %}cancelled{% endif %}">
+                    <div class="past-info">
+                        <div class="past-service">{{ appt.service.name }}</div>
+                        <div class="past-meta">
+                            {{ appt.service_provider.business_name }} • {{ appt.appointment_date|date:"M d, Y" }} • 
+                            <span class="{% if appt.status == 'completed' %}text-success{% elif appt.status == 'cancelled' %}text-danger{% endif %}">
+                                {{ appt.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% if appt.status == 'completed' %}
+                    <a href="{% url 'accounts:rebook_appointment' appt.id %}" class="btn-rebook">
+                        <i class="bi bi-arrow-repeat"></i> Book Again
+                    </a>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

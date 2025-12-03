@@ -1,0 +1,672 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Details - {{ appointment.service.name }}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            top: -80px;
+            right: -50px;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-size: 0.95rem;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 15px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 40px 0 60px;
+            margin-top: -30px;
+        }
+        
+        /* Appointment Card */
+        .appointment-detail-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .status-banner {
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .status-banner.confirmed {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        
+        .status-banner.pending {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
+        .status-banner.cancelled {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        }
+        
+        .status-banner.completed {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+        }
+        
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .status-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .status-banner.confirmed .status-icon {
+            background: #10b981;
+            color: white;
+        }
+        
+        .status-banner.pending .status-icon {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .status-banner.cancelled .status-icon {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .status-banner.completed .status-icon {
+            background: #6366f1;
+            color: white;
+        }
+        
+        .status-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .status-banner.confirmed .status-text { color: #065f46; }
+        .status-banner.pending .status-text { color: #92400e; }
+        .status-banner.cancelled .status-text { color: #991b1b; }
+        .status-banner.completed .status-text { color: #3730a3; }
+        
+        .booking-id {
+            font-size: 0.9rem;
+            color: #6b7280;
+            background: rgba(255,255,255,0.7);
+            padding: 8px 16px;
+            border-radius: 50px;
+        }
+        
+        .card-body-content {
+            padding: 35px;
+        }
+        
+        /* Date/Time Section */
+        .datetime-section {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+        
+        .date-box, .time-box {
+            flex: 1;
+            min-width: 200px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .date-box i, .time-box i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .date-value, .time-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .date-label, .time-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        
+        /* Info Sections */
+        .info-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        
+        .info-card {
+            background: #f9fafb;
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .info-icon.purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .info-icon.green {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .info-icon.orange {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .info-icon.blue {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .info-details h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .info-details p {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        /* Price Section */
+        .price-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 14px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .price-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .price-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-action {
+            flex: 1;
+            min-width: 150px;
+            padding: 16px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-reschedule {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-reschedule:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: white;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+        }
+        
+        .btn-cancel:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .btn-rebook {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-rebook:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+        
+        .btn-contact {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .btn-contact:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+        
+        /* Provider Card */
+        .provider-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-top: 25px;
+        }
+        
+        .provider-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .provider-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #e5e7eb;
+        }
+        
+        .provider-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .provider-type {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .provider-contact {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+            font-size: 0.95rem;
+        }
+        
+        .contact-item i {
+            color: #667eea;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.4rem;
+            }
+            
+            .card-body-content {
+                padding: 25px;
+            }
+            
+            .datetime-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-action {
+                width: 100%;
+            }
+            
+            .page-header {
+                padding-top: 80px;
+            }
+            
+            .mobile-header {
+                display: flex !important;
+            }
+        }
+        
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            padding: 0 15px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-header .back-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .mobile-header .back-link:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .mobile-header .title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .mobile-header .spacer {
+            width: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <a href="{% url 'accounts:client_dashboard' %}" class="back-link">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <span class="title">Appointment Details</span>
+        <div class="spacer"></div>
+    </div>
+    
+    <!-- Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="{% url 'accounts:client_dashboard' %}" class="back-btn">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+                <h1 class="page-title">Appointment Details</h1>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="appointment-detail-card">
+                        <!-- Status Banner -->
+                        <div class="status-banner {{ appointment.status }}">
+                            <div class="status-info">
+                                <div class="status-icon">
+                                    {% if appointment.status == 'confirmed' %}
+                                        <i class="bi bi-check-lg"></i>
+                                    {% elif appointment.status == 'pending' %}
+                                        <i class="bi bi-clock"></i>
+                                    {% elif appointment.status == 'cancelled' %}
+                                        <i class="bi bi-x-lg"></i>
+                                    {% elif appointment.status == 'completed' %}
+                                        <i class="bi bi-check-circle"></i>
+                                    {% else %}
+                                        <i class="bi bi-calendar"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="status-text">
+                                        {% if appointment.status == 'confirmed' %}
+                                            Appointment Confirmed
+                                        {% elif appointment.status == 'pending' %}
+                                            Awaiting Confirmation
+                                        {% elif appointment.status == 'cancelled' %}
+                                            Appointment Cancelled
+                                        {% elif appointment.status == 'completed' %}
+                                            Appointment Completed
+                                        {% else %}
+                                            {{ appointment.get_status_display }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="booking-id">
+                                Booking #{{ appointment.id }}
+                            </div>
+                        </div>
+                        
+                        <div class="card-body-content">
+                            <!-- Date & Time -->
+                            <div class="datetime-section">
+                                <div class="date-box">
+                                    <i class="bi bi-calendar-event"></i>
+                                    <div class="date-value">{{ appointment.appointment_date|date:"l, M d" }}</div>
+                                    <div class="date-label">{{ appointment.appointment_date|date:"Y" }}</div>
+                                </div>
+                                <div class="time-box">
+                                    <i class="bi bi-clock"></i>
+                                    <div class="time-value">{{ appointment.appointment_time|time:"g:i A" }}</div>
+                                    <div class="time-label">Appointment Time</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Service Info -->
+                            <div class="info-section">
+                                <div class="section-label">Service</div>
+                                <div class="info-card">
+                                    <div class="info-icon purple">
+                                        <i class="bi bi-scissors"></i>
+                                    </div>
+                                    <div class="info-details">
+                                        <h4>{{ appointment.service.name }}</h4>
+                                        <p>Duration: {{ appointment.service.duration }} minutes</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Staff Member (if assigned) -->
+                            {% if appointment.staff_member %}
+                            <div class="info-section">
+                                <div class="section-label">Staff Member</div>
+                                <div class="info-card">
+                                    <div class="info-icon green">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                    <div class="info-details">
+                                        <h4>{{ appointment.staff_member.name }}</h4>
+                                        <p>{{ appointment.staff_member.role_title|default:"Professional" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Price -->
+                            <div class="price-section">
+                                <div class="price-label">Total Amount</div>
+                                <div class="price-value">₹{{ appointment.service.price }}</div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                                    <a href="{% url 'accounts:reschedule_appointment_client' appointment.id %}" class="btn-action btn-reschedule">
+                                        <i class="bi bi-calendar2-plus"></i> Reschedule
+                                    </a>
+                                    <a href="{% url 'accounts:cancel_appointment_client' appointment.id %}" class="btn-action btn-cancel">
+                                        <i class="bi bi-x-circle"></i> Cancel
+                                    </a>
+                                {% elif appointment.status == 'completed' %}
+                                    <a href="{% url 'accounts:rebook_appointment' appointment.id %}" class="btn-action btn-rebook">
+                                        <i class="bi bi-arrow-repeat"></i> Book Again
+                                    </a>
+                                {% endif %}
+                                
+                                {% if appointment.service_provider.whatsapp_number %}
+                                <a href="https://wa.me/{{ appointment.service_provider.whatsapp_number }}" target="_blank" class="btn-action btn-contact">
+                                    <i class="bi bi-whatsapp"></i> Contact Provider
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Provider Info Card -->
+                    <div class="provider-card">
+                        <div class="provider-header">
+                            {% if appointment.service_provider.logo %}
+                                <img src="{{ appointment.service_provider.logo.url }}" alt="{{ appointment.service_provider.business_name }}" class="provider-logo">
+                            {% else %}
+                                <div class="provider-logo d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-building text-secondary" style="font-size: 1.5rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <div class="provider-name">{{ appointment.service_provider.business_name }}</div>
+                                <div class="provider-type">{{ appointment.service_provider.business_type|default:"Service Provider" }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="provider-contact">
+                            {% if appointment.service_provider.phone %}
+                            <div class="contact-item">
+                                <i class="bi bi-telephone"></i>
+                                <span>{{ appointment.service_provider.phone }}</span>
+                            </div>
+                            {% endif %}
+                            
+                            {% if appointment.service_provider.business_address %}
+                            <div class="contact-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>{{ appointment.service_provider.business_address }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

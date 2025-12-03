@@ -1,0 +1,20 @@
+/* Minimal subscriptions CSS to prevent 404 and provide small overrides */
+/* Add any project-level overrides here. */
+
+body {
+  /* keep Bootstrap default light background for now */
+}
+
+/* small utility to ensure form controls are visible if any resets removed them */
+input[type="text"],
+input[type="number"],
+input[type="time"],
+input[type="date"],
+select,
+textarea {
+  box-sizing: border-box;
+}
+
+.btn {
+  cursor: pointer;
+}

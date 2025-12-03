@@ -1,0 +1,3361 @@
+{% load static %}
+{% load provider_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book with {{ provider.business_name }} - Appointment Booking</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #eef2ff;
+            --gradient-start: #0ea5e9;
+            --gradient-end: #6366f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+        }
+        
+        /* HERO SECTION - MODERN REDESIGN */
+        .hero-section {
+            position: relative;
+            min-height: 500px;
+            /* Background set dynamically via inline style */
+            overflow: hidden;
+            padding-bottom: 60px;
+        }
+        
+        /* Modern gradient mesh background */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 10% 20%, rgba(251, 191, 36, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(244, 114, 182, 0.12) 0%, transparent 50%);
+            top: 0;
+            left: 0;
+        }
+        
+        /* Subtle glow orb */
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 60%);
+            top: -200px;
+            right: -200px;
+            border-radius: 50%;
+        }
+        
+        /* Wave Design at Bottom */
+        .hero-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+        }
+        
+        .hero-wave svg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hero-wave path {
+            fill: #ffffff;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 30px); }
+        }
+        
+        /* Top Header with Logo */
+        .hero-header {
+            position: relative;
+            z-index: 2;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-nav .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 25px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .header-nav .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .header-nav .nav-btn.whatsapp {
+            background: #25D366;
+            border-color: #25D366;
+        }
+        
+        .header-nav .nav-btn.whatsapp:hover {
+            background: #20bd5a;
+        }
+        
+        .header-nav .nav-btn.login {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1f2937;
+            border-color: white;
+            font-weight: 600;
+        }
+        
+        .header-nav .nav-btn.login:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .header-nav .nav-btn.signup {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-color: #10b981;
+            font-weight: 600;
+        }
+        
+        .header-nav .nav-btn.signup:hover {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .header-nav .nav-btn.history {
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            border-color: rgba(99, 102, 241, 0.9);
+        }
+        
+        .header-nav .nav-btn.history:hover {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+        
+        /* Mobile: Hide nav text, show icons only */
+        @media (max-width: 768px) {
+            .header-nav .nav-btn {
+                padding: 10px 12px;
+            }
+            .header-nav .nav-btn span {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header-nav {
+                gap: 6px;
+            }
+            .header-nav .nav-btn {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        .header-logo img {
+            width: 80px;
+            height: 80px;
+            max-width: 80px;
+            max-height: 80px;
+            min-width: 80px;
+            min-height: 80px;
+            border-radius: 14px;
+            object-fit: contain;
+            background: white;
+            padding: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+        
+        .header-logo .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #4c1d95;
+        }
+        
+        .header-logo span {
+            display: none;
+        }
+        
+        /* 2 Column Grid - Centered */
+        .hero-grid {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 40px 50px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 70px;
+            align-items: center;
+        }
+        
+        /* LEFT: Business Info */
+        .hero-left {
+            color: {% if text_contrast == 'dark' %}#1f2937{% else %}white{% endif %};
+        }
+        
+        .business-name {
+            font-size: 3.8rem;
+            font-weight: 800;
+            color: white;
+            margin: 0 0 24px 0;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+        }
+        
+        .business-tagline {
+            font-size: 1.25rem;
+            color: rgba(255,255,255,0.9);
+            margin: 0 0 35px 0;
+            line-height: 1.8;
+            font-weight: 400;
+            max-width: 500px;
+        }
+        
+        .hero-location {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: {% if text_contrast == 'dark' %}rgba(31,41,55,0.9){% else %}rgba(255,255,255,0.9){% endif %};
+            font-size: 1.05rem;
+            margin-bottom: 28px;
+        }
+        
+        .hero-location i {
+            color: {% if text_contrast == 'dark' %}var(--hero-dark){% else %}rgba(255,255,255,0.9){% endif %};
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        
+        /* RIGHT: Profile Image */
+        .hero-right {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        
+        /* Decorative background shape */
+        .hero-right::before {
+            content: '';
+            position: absolute;
+            width: 270px;
+            height: 360px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 26px;
+            transform: rotate(6deg);
+            top: -10px;
+            right: -10px;
+        }
+        
+        /* Second decorative shape */
+        .hero-right::after {
+            content: '';
+            position: absolute;
+            width: 270px;
+            height: 360px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%);
+            border-radius: 26px;
+            transform: rotate(-4deg);
+            top: 5px;
+            left: -12px;
+            z-index: 0;
+        }
+        
+        .profile-image {
+            position: relative;
+            z-index: 1;
+            width: 250px;
+            height: 330px;
+            max-width: 250px;
+            max-height: 330px;
+            border-radius: 22px;
+            object-fit: cover;
+            object-position: top;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.35),
+                0 0 0 1px rgba(255,255,255,0.1);
+            background: var(--hero-dark);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        
+        .profile-image:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 
+                0 35px 60px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,255,255,0.2),
+                0 0 50px rgba(255, 255, 255, 0.1);
+        }
+        
+        .profile-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            color: rgba(255,255,255,0.7);
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 36px;
+            border-radius: 50px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .hero-btn.appointment {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            letter-spacing: 0.5px;
+        }
+        
+        .hero-btn.appointment:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .hero-btn.appointment i {
+            font-size: 1.2rem;
+        }
+        
+        .hero-btn.phone {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .hero-btn.phone:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: translateY(-3px);
+        }
+        
+        /* GALLERY / CAROUSEL SECTION - REDESIGNED */
+        .gallery-section {
+            padding: 0;
+            background: white;
+            position: relative;
+        }
+        
+        .gallery-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 20px 60px;
+        }
+        
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        
+        .gallery-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .gallery-header p {
+            color: #64748b;
+            font-size: 1rem;
+        }
+        
+        .modern-carousel {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        }
+        
+        .carousel-image {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+        }
+        
+        .carousel-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+        }
+        
+        .carousel-caption {
+            z-index: 2;
+            bottom: 30px;
+        }
+        
+        .carousel-caption p {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 1rem;
+        }
+        
+        .carousel-indicators {
+            bottom: 20px;
+            z-index: 3;
+        }
+        
+        .carousel-indicators button {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 5px;
+            background: rgba(255,255,255,0.5);
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .carousel-indicators button.active {
+            width: 30px;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 55px;
+            height: 55px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border-radius: 50%;
+            opacity: 0.9;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+        
+        .carousel-control-prev {
+            left: 20px;
+        }
+        
+        .carousel-control-next {
+            right: 20px;
+        }
+        
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(1) grayscale(100);
+            width: 24px;
+            height: 24px;
+        }
+
+        /* ================================
+           MODERN SECTIONS REDESIGN
+           ================================ */
+        
+        /* ABOUT US SECTION */
+        .about-section {
+            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 50%, #fff7ed 100%);
+            padding: 80px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .about-section::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(251, 146, 60, 0.15) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            border-radius: 50%;
+        }
+        
+        .about-section::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(20, 184, 166, 0.12) 0%, transparent 70%);
+            bottom: -50px;
+            right: -50px;
+            border-radius: 50%;
+        }
+        
+        .about-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .about-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .about-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(20, 184, 166, 0.3);
+        }
+        
+        .about-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+        
+        .about-subtitle {
+            font-size: 1.15rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .about-text {
+            color: #374151;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+        
+        .about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 30px 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .stat-card:hover {
+            background: white;
+            transform: translateY(-5px);
+            border-color: #14b8a6;
+            box-shadow: 0 15px 40px rgba(20, 184, 166, 0.15);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        /* TESTIMONIALS SECTION */
+        .testimonials-section {
+            background: linear-gradient(180deg, #ffffff 0%, #fef7f0 100%);
+            padding: 80px 20px;
+        }
+        
+        .testimonials-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .testimonials-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .testimonials-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+        
+        .testimonials-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 15px;
+        }
+        
+        .testimonials-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        .testimonials-grid-modern {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+        }
+        
+        .testimonial-card-modern {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            position: relative;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        
+        .testimonial-card-modern:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(251, 146, 60, 0.18);
+        }
+        
+        .testimonial-quote-icon {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            font-size: 3rem;
+            color: #fed7aa;
+        }
+        
+        .testimonial-stars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-stars i {
+            color: #fbbf24;
+            font-size: 1.1rem;
+        }
+        
+        .testimonial-text-modern {
+            font-size: 1.05rem;
+            color: #374151;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+        
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .testimonial-author-info {
+            flex: 1;
+        }
+        
+        .testimonial-author-name {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 1rem;
+        }
+        
+        .testimonial-author-title {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        
+        /* TEAM SECTION */
+        .team-section {
+            background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
+            padding: 80px 20px;
+        }
+        
+        .team-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .team-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .team-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+        
+        .team-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 15px;
+        }
+        
+        .team-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        .team-grid-modern {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .team-card-modern {
+            background: linear-gradient(180deg, #fff1f2 0%, #ffffff 100%);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            border: 1px solid #fecdd3;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f472b6 0%, #ec4899 50%, #db2777 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .team-card-modern:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 60px rgba(236, 72, 153, 0.15);
+            border-color: transparent;
+        }
+        
+        .team-card-modern:hover::before {
+            opacity: 1;
+        }
+        
+        .team-photo-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px;
+        }
+        
+        .team-photo-modern {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .team-photo-placeholder {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #ec4899;
+            border: 4px solid white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .team-status {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+        
+        .team-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        
+        .team-role {
+            display: inline-block;
+            background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+            color: #be185d;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .about-title, .testimonials-title, .team-title {
+                font-size: 2rem;
+            }
+            
+            .testimonials-grid-modern {
+                grid-template-columns: 1fr;
+            }
+            
+            .team-grid-modern {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            .stat-card {
+                padding: 20px 15px;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Legacy section styles for backward compatibility */
+        .content-section {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #111827;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        /* Legacy TESTIMONIALS */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .testimonial-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        /* Legacy TEAM */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .team-member-card {
+            text-align: center;
+        }
+        
+        .team-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 4px solid var(--primary-light);
+        }
+        
+        /* WIZARD BOOKING FORM STYLES */
+        .wizard-progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+        }
+        
+        .wizard-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+        }
+        
+        .wizard-step span {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        
+        .wizard-step.active span {
+            color: #4f46e5;
+        }
+        
+        .wizard-step.completed span {
+            color: #10b981;
+        }
+        
+        .wizard-dot {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.4s ease;
+            border: 3px solid #e2e8f0;
+        }
+        
+        .wizard-step.active .wizard-dot {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border-color: #4f46e5;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            transform: scale(1.1);
+        }
+        
+        .wizard-step.completed .wizard-dot {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .wizard-line {
+            width: 60px;
+            height: 3px;
+            background: #e2e8f0;
+            margin: 0 5px;
+            margin-bottom: 28px;
+            transition: background 0.4s ease;
+        }
+        
+        .wizard-line.active {
+            background: linear-gradient(90deg, #10b981 0%, #4f46e5 100%);
+        }
+        
+        .wizard-panel {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .wizard-panel.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Service List */
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .service-item:hover {
+            border-color: #a5b4fc;
+            background: white;
+            transform: translateX(5px);
+        }
+        
+        .service-item.selected {
+            border-color: #4f46e5;
+            background: linear-gradient(135deg, #eef2ff 0%, #faf5ff 100%);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.15);
+        }
+        
+        .service-radio {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .service-item.selected .service-radio {
+            border-color: #4f46e5;
+            background: #4f46e5;
+        }
+        
+        .service-item.selected .service-radio::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .service-info {
+            flex: 1;
+        }
+        
+        .service-info .service-name {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+        
+        .service-meta {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        
+        .service-price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #4f46e5;
+        }
+        
+        /* Wizard Field */
+        .wizard-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .wizard-field label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .wizard-field input,
+        .wizard-field textarea {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        
+        .wizard-field input:focus,
+        .wizard-field textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        
+        /* Time Slots */
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .time-slot {
+            padding: 14px 10px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .time-slot:hover {
+            border-color: #a5b4fc;
+            background: #eef2ff;
+        }
+        
+        .time-slot.selected {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        /* Booking Summary */
+        .booking-summary {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 25px;
+        }
+        
+        .summary-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        
+        .summary-row span:first-child {
+            color: #64748b;
+        }
+        
+        .summary-row span:last-child {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        /* Wizard Buttons */
+        .wizard-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        .wizard-btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+        }
+        
+        .wizard-btn.back {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        
+        .wizard-btn.back:hover {
+            background: #e2e8f0;
+        }
+        
+        .wizard-btn.next {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .wizard-btn.next:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35);
+        }
+        
+        .wizard-btn.next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .wizard-btn.submit {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .wizard-btn.submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
+        }
+        
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-header {
+                padding: 15px 20px;
+            }
+            
+            .header-logo img,
+            .header-logo .logo-placeholder {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .header-logo span {
+                font-size: 1rem;
+            }
+            
+            .hero-grid {
+                padding: 20px 20px 80px;
+                gap: 20px;
+            }
+            
+            .profile-image {
+                width: 180px;
+                height: 235px;
+            }
+            
+            .business-name {
+                font-size: 2rem;
+            }
+            
+            .business-tagline {
+                font-size: 1rem;
+            }
+            
+            .hero-btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .carousel-image {
+                height: 280px;
+            }
+            
+            .carousel-control-prev,
+            .carousel-control-next {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .carousel-control-prev {
+                left: 10px;
+            }
+            
+            .carousel-control-next {
+                right: 10px;
+            }
+            
+            .gallery-container {
+                padding: 30px 15px 40px;
+            }
+            
+            .gallery-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .booking-card {
+                padding: 20px;
+            }
+            
+            .wizard-progress {
+                gap: 0;
+            }
+            
+            .wizard-dot {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+            
+            .wizard-line {
+                width: 30px;
+            }
+            
+            .wizard-step span {
+                font-size: 0.7rem;
+            }
+            
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .service-item {
+                flex-wrap: wrap;
+            }
+            
+            .service-price {
+                width: 100%;
+                text-align: right;
+                margin-top: 8px;
+            }
+            
+            .wizard-buttons {
+                flex-direction: column;
+            }
+            
+            .wizard-btn.back {
+                order: 2;
+            }
+        }
+        
+        /* ================================
+           COMPREHENSIVE MOBILE RESPONSIVE
+           ================================ */
+        
+        /* Extra Small Devices (phones, less than 576px) */
+        @media (max-width: 575.98px) {
+            /* Hero Section */
+            .hero-section {
+                min-height: auto;
+            }
+            
+            .hero-grid {
+                grid-template-columns: 1fr !important;
+                text-align: center;
+                padding: 20px 15px 100px;
+                gap: 25px;
+            }
+            
+            .hero-left {
+                order: 2;
+            }
+            
+            .hero-right {
+                order: 1;
+            }
+            
+            .profile-image {
+                width: 200px !important;
+                height: 260px !important;
+                margin: 0 auto;
+            }
+            
+            .business-name {
+                font-size: 1.8rem !important;
+            }
+            
+            .business-tagline {
+                font-size: 0.95rem !important;
+            }
+            
+            .hero-location {
+                justify-content: center;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hero-btn {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+            
+            /* Gallery Section */
+            .gallery-section {
+                padding: 0;
+            }
+            
+            .gallery-container {
+                padding: 25px 15px 35px;
+            }
+            
+            .gallery-header h2 {
+                font-size: 1.4rem !important;
+            }
+            
+            .carousel-image {
+                height: 220px !important;
+            }
+            
+            .modern-carousel {
+                border-radius: 12px !important;
+            }
+            
+            /* Booking Section */
+            #booking {
+                padding: 40px 15px !important;
+            }
+            
+            #booking > div > div:first-child h2 {
+                font-size: 1.6rem !important;
+            }
+            
+            .wizard-panel > div:first-child h3 {
+                font-size: 1.2rem !important;
+            }
+            
+            .wizard-panel > div:first-child > div:first-child {
+                font-size: 2rem !important;
+            }
+            
+            .service-list {
+                gap: 10px;
+            }
+            
+            .service-item {
+                padding: 15px !important;
+            }
+            
+            .service-name {
+                font-size: 1rem !important;
+            }
+            
+            .time-slots {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+            
+            .time-slot {
+                padding: 10px 8px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .booking-summary {
+                padding: 15px !important;
+            }
+            
+            /* About Section */
+            .about-section {
+                padding: 50px 15px !important;
+            }
+            
+            .about-header {
+                margin-bottom: 35px !important;
+            }
+            
+            .about-badge {
+                font-size: 0.8rem !important;
+                padding: 6px 15px !important;
+            }
+            
+            .about-title {
+                font-size: 1.8rem !important;
+            }
+            
+            .about-subtitle {
+                font-size: 1rem !important;
+            }
+            
+            .about-content {
+                grid-template-columns: 1fr !important;
+                gap: 25px !important;
+            }
+            
+            .about-text {
+                font-size: 0.95rem !important;
+                text-align: center;
+            }
+            
+            .about-stats {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 12px !important;
+            }
+            
+            .stat-card {
+                padding: 20px 12px !important;
+            }
+            
+            .stat-icon {
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 1.2rem !important;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem !important;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem !important;
+            }
+            
+            /* Testimonials Section */
+            .testimonials-section {
+                padding: 50px 15px !important;
+            }
+            
+            .testimonials-header {
+                margin-bottom: 35px !important;
+            }
+            
+            .testimonials-badge {
+                font-size: 0.8rem !important;
+                padding: 6px 15px !important;
+            }
+            
+            .testimonials-title {
+                font-size: 1.8rem !important;
+            }
+            
+            .testimonials-grid-modern {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            
+            .testimonial-card-modern {
+                padding: 25px 20px !important;
+            }
+            
+            .testimonial-quote-icon {
+                font-size: 2rem !important;
+                top: 15px !important;
+                right: 20px !important;
+            }
+            
+            .testimonial-text-modern {
+                font-size: 0.95rem !important;
+            }
+            
+            .testimonial-avatar {
+                width: 45px !important;
+                height: 45px !important;
+                font-size: 1rem !important;
+            }
+            
+            /* Team Section */
+            .team-section {
+                padding: 50px 15px !important;
+            }
+            
+            .team-header {
+                margin-bottom: 40px !important;
+            }
+            
+            .team-badge {
+                font-size: 0.8rem !important;
+                padding: 6px 15px !important;
+            }
+            
+            .team-title {
+                font-size: 1.8rem !important;
+            }
+            
+            .team-grid-modern {
+                grid-template-columns: 1fr !important;
+                gap: 20px !important;
+            }
+            
+            .team-card-modern {
+                padding: 30px 20px !important;
+            }
+            
+            .team-photo-wrapper {
+                width: 120px !important;
+                height: 120px !important;
+            }
+            
+            .team-photo-modern,
+            .team-photo-placeholder {
+                width: 120px !important;
+                height: 120px !important;
+            }
+            
+            .team-name {
+                font-size: 1.15rem !important;
+            }
+            
+            .team-role {
+                font-size: 0.8rem !important;
+                padding: 5px 14px !important;
+            }
+        }
+        
+        /* Small Devices (landscape phones, 576px - 767px) */
+        @media (min-width: 576px) and (max-width: 767.98px) {
+            .hero-grid {
+                grid-template-columns: 1fr !important;
+                text-align: center;
+                gap: 30px;
+            }
+            
+            .hero-left {
+                order: 2;
+            }
+            
+            .hero-right {
+                order: 1;
+            }
+            
+            .profile-image {
+                width: 220px !important;
+                height: 290px !important;
+                margin: 0 auto;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .hero-location {
+                justify-content: center;
+            }
+            
+            .about-stats {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            .testimonials-grid-modern {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .team-grid-modern {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        /* Medium Devices (tablets, 768px - 991px) */
+        @media (min-width: 768px) and (max-width: 991.98px) {
+            .hero-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+            
+            .profile-image {
+                width: 240px !important;
+                height: 315px !important;
+            }
+            
+            .about-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .testimonials-grid-modern {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .team-grid-modern {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .service-item,
+            .time-slot,
+            .wizard-btn,
+            .hero-btn,
+            .social-icon {
+                min-height: 48px;
+            }
+            
+            .wizard-field input,
+            .wizard-field textarea {
+                font-size: 16px !important; /* Prevents zoom on iOS */
+            }
+        }
+        
+        /* ================================
+           HAMBURGER MENU - MOBILE NAV
+           ================================ */
+        
+        .hamburger-btn {
+            display: none;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 14px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .hamburger-btn.active {
+            background: white;
+        }
+        
+        .hamburger-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 18px;
+        }
+        
+        .hamburger-icon span {
+            display: block;
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: white;
+            border-radius: 3px;
+            transition: all 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .hamburger-btn.active .hamburger-icon span {
+            background: #667eea;
+        }
+        
+        .hamburger-icon span:nth-child(1) {
+            top: 0;
+        }
+        
+        .hamburger-icon span:nth-child(2) {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .hamburger-icon span:nth-child(3) {
+            bottom: 0;
+        }
+        
+        .hamburger-btn.active .hamburger-icon span:nth-child(1) {
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+        }
+        
+        .hamburger-btn.active .hamburger-icon span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        .hamburger-btn.active .hamburger-icon span:nth-child(3) {
+            bottom: 50%;
+            transform: translateY(50%) rotate(-45deg);
+        }
+        
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Mobile Menu Panel */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 380px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-y: auto;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu-header {
+            padding: 25px 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        .mobile-menu-logo {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            object-fit: contain;
+            background: white;
+            padding: 5px;
+        }
+        
+        .mobile-menu-logo-placeholder {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .mobile-menu-brand {
+            flex: 1;
+        }
+        
+        .mobile-menu-brand h4 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .mobile-menu-brand p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            margin: 0;
+        }
+        
+        .mobile-menu-close {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .mobile-menu-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.1);
+        }
+        
+        .mobile-menu-nav {
+            padding: 20px 15px;
+        }
+        
+        .mobile-menu-section {
+            margin-bottom: 25px;
+        }
+        
+        .mobile-menu-section-title {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 0 10px;
+            margin-bottom: 10px;
+        }
+        
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link:focus {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .mobile-nav-link i {
+            font-size: 1.3rem;
+            width: 28px;
+            text-align: center;
+        }
+        
+        .mobile-nav-link.whatsapp {
+            background: rgba(37, 211, 102, 0.2);
+        }
+        
+        .mobile-nav-link.whatsapp:hover {
+            background: #25D366;
+        }
+        
+        .mobile-nav-link.primary {
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .mobile-nav-link.primary:hover {
+            background: white;
+            transform: translateX(5px);
+        }
+        
+        .mobile-nav-link.book-btn {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1f2937;
+            font-weight: 700;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        .mobile-nav-link.book-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
+        }
+        
+        .mobile-menu-footer {
+            padding: 20px 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            margin-top: auto;
+        }
+        
+        .mobile-menu-contact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .mobile-menu-contact i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Show hamburger on mobile */
+        @media (max-width: 991px) {
+            .hamburger-btn {
+                display: block;
+            }
+            
+            .header-nav {
+                display: none !important;
+            }
+        }
+        
+        /* Adjust header for mobile */
+        @media (max-width: 768px) {
+            .hero-header {
+                padding: 15px 20px;
+            }
+            
+            .header-logo img {
+                width: 60px;
+                height: 60px;
+                max-width: 60px;
+                max-height: 60px;
+                min-width: 60px;
+                min-height: 60px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-header {
+                padding: 12px 15px;
+            }
+            
+            .header-logo img {
+                width: 50px;
+                height: 50px;
+                max-width: 50px;
+                max-height: 50px;
+                min-width: 50px;
+                min-height: 50px;
+            }
+            
+            .hamburger-btn {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .hamburger-icon {
+                width: 20px;
+                height: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+    
+    <!-- Mobile Menu Panel -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            {% if provider.logo %}
+            <img src="{{ provider.logo.url }}" alt="{{ provider.business_name }}" class="mobile-menu-logo">
+            {% else %}
+            <div class="mobile-menu-logo-placeholder">
+                <i class="bi bi-building"></i>
+            </div>
+            {% endif %}
+            <button class="mobile-menu-close" onclick="closeMobileMenu()" aria-label="Close Menu">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        
+        <div class="mobile-menu-nav">
+            <!-- Quick Actions -->
+            <div class="mobile-menu-section">
+                <div class="mobile-menu-section-title">Quick Actions</div>
+                <a href="#booking" class="mobile-nav-link book-btn" onclick="toggleMobileMenu(); document.getElementById('booking').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <i class="bi bi-calendar-check-fill"></i>
+                    Book Appointment
+                </a>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="mobile-menu-section">
+                <div class="mobile-menu-section-title">Explore</div>
+                {% if hero_images %}
+                <a href="#gallery-section" class="mobile-nav-link" onclick="toggleMobileMenu(); document.getElementById('gallery-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <i class="bi bi-images"></i>
+                    Gallery
+                </a>
+                {% endif %}
+                <a href="#about-section" class="mobile-nav-link" onclick="toggleMobileMenu(); document.getElementById('about-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <i class="bi bi-info-circle"></i>
+                    About Us
+                </a>
+                {% if team_members %}
+                <a href="#team-section" class="mobile-nav-link" onclick="toggleMobileMenu(); document.getElementById('team-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <i class="bi bi-people"></i>
+                    Our Team
+                </a>
+                {% endif %}
+                {% if testimonials %}
+                <a href="#testimonials-section" class="mobile-nav-link" onclick="toggleMobileMenu(); setTimeout(function(){ var el = document.querySelector('.testimonials-section'); if(el) el.scrollIntoView({behavior: 'smooth'}); }, 100); return false;">
+                    <i class="bi bi-star"></i>
+                    Reviews
+                </a>
+                {% endif %}
+            </div>
+            
+            <!-- Contact -->
+            <div class="mobile-menu-section">
+                <div class="mobile-menu-section-title">Contact</div>
+                {% if provider.whatsapp_number %}
+                <a href="https://wa.me/{{ provider.whatsapp_number }}" target="_blank" class="mobile-nav-link whatsapp">
+                    <i class="bi bi-whatsapp"></i>
+                    WhatsApp Us
+                </a>
+                {% endif %}
+                {% if provider.phone %}
+                <a href="tel:{{ provider.phone }}" class="mobile-nav-link">
+                    <i class="bi bi-telephone"></i>
+                    Call Now
+                </a>
+                {% endif %}
+            </div>
+            
+            <!-- Account -->
+            <div class="mobile-menu-section">
+                <div class="mobile-menu-section-title">Account</div>
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'accounts:client_dashboard' %}" class="mobile-nav-link primary">
+                    <i class="bi bi-clock-history"></i>
+                    My Bookings
+                </a>
+                <a href="{% url 'accounts:logout' %}" class="mobile-nav-link">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Logout
+                </a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="mobile-nav-link primary">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Login
+                </a>
+                <a href="{% url 'accounts:register_client' %}?next={{ request.path }}" class="mobile-nav-link">
+                    <i class="bi bi-person-plus"></i>
+                    Sign Up
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if provider.business_address or provider.phone %}
+        <div class="mobile-menu-footer">
+            {% if provider.phone %}
+            <div class="mobile-menu-contact">
+                <i class="bi bi-telephone"></i>
+                {{ provider.phone }}
+            </div>
+            {% endif %}
+            {% if provider.business_address %}
+            <div class="mobile-menu-contact">
+                <i class="bi bi-geo-alt"></i>
+                {{ provider.business_address|truncatechars:40 }}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- HERO SECTION - 2 COLUMN GRID -->
+    <div class="hero-section" style="background: linear-gradient(160deg, {{ provider.hero_color|default:'#7c3aed'|darken_color:30 }} 0%, {{ provider.hero_color|default:'#7c3aed' }} 40%, {{ provider.hero_color|default:'#7c3aed'|lighten_color:20 }} 100%);">
+        <!-- Top Header with Logo and Nav -->
+        <div class="hero-header">
+            <div class="header-logo">
+                {% if provider.logo %}
+                <img src="{{ provider.logo.url }}" alt="{{ provider.business_name }}">
+                {% else %}
+                <div class="logo-placeholder">
+                    <i class="bi bi-building"></i>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Hamburger Button (Mobile) -->
+            <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Toggle Menu">
+                <div class="hamburger-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            
+            <!-- Navigation Buttons (Desktop) -->
+            <nav class="header-nav">
+                {% if hero_images %}
+                <a href="#gallery-section" class="nav-btn" onclick="document.getElementById('gallery-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <i class="bi bi-images"></i> <span>Gallery</span>
+                </a>
+                {% endif %}
+                <a href="#about-section" class="nav-btn" onclick="document.getElementById('about-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <i class="bi bi-info-circle"></i> <span>About Us</span>
+                </a>
+                {% if team_members %}
+                <a href="#team-section" class="nav-btn" onclick="document.getElementById('team-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <i class="bi bi-people"></i> <span>Team</span>
+                </a>
+                {% endif %}
+                {% if provider.whatsapp_number %}
+                <a href="https://wa.me/{{ provider.whatsapp_number }}" target="_blank" class="nav-btn whatsapp">
+                    <i class="bi bi-whatsapp"></i> <span>WhatsApp</span>
+                </a>
+                {% endif %}
+                
+                <!-- Client Login/Signup/History Buttons -->
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'accounts:client_dashboard' %}" class="nav-btn history">
+                    <i class="bi bi-clock-history"></i> <span>My Bookings</span>
+                </a>
+                <a href="{% url 'accounts:logout' %}" class="nav-btn">
+                    <i class="bi bi-box-arrow-right"></i> <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="nav-btn login">
+                    <i class="bi bi-box-arrow-in-right"></i> <span>Login</span>
+                </a>
+                <a href="{% url 'accounts:register_client' %}?next={{ request.path }}" class="nav-btn signup">
+                    <i class="bi bi-person-plus"></i> <span>Sign Up</span>
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        
+        <!-- Main Content Grid -->
+        <div class="hero-grid">
+            <!-- LEFT: Business Info -->
+            <div class="hero-left">
+                <h1 class="business-name">{{ provider.business_name }}</h1>
+                <p class="business-tagline">{{ provider.mission_statement|default:"Professional services tailored just for you" }}</p>
+                
+                <div class="hero-buttons">
+                    <a href="#booking-section" class="hero-btn appointment" onclick="document.getElementById('booking-section').scrollIntoView({behavior: 'smooth'}); return false;">
+                        <i class="bi bi-calendar-check"></i> Book Appointment
+                    </a>
+                </div>
+            </div>
+            
+            <!-- RIGHT: Profile Image -->
+            <div class="hero-right">
+                {% if provider.profile_image %}
+                <img src="{{ provider.profile_image.url }}" alt="{{ provider.business_name }}" class="profile-image">
+                {% elif provider.logo %}
+                <img src="{{ provider.logo.url }}" alt="{{ provider.business_name }}" class="profile-image">
+                {% else %}
+                <div class="profile-image profile-placeholder">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Wave Design at Bottom -->
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,60 C360,120 720,0 1080,60 C1260,90 1380,80 1440,70 L1440,120 L0,120 Z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- GALLERY / CAROUSEL SECTION -->
+    {% if hero_images %}
+    <div id="gallery-section" class="gallery-section">
+        <div class="gallery-container">
+            <div class="gallery-header">
+                <h2><i class="bi bi-images" style="color: #4f46e5;"></i> Our Gallery</h2>
+                <p>Take a look at our work and space</p>
+            </div>
+            
+            <div id="heroCarousel" class="carousel slide modern-carousel" data-bs-ride="carousel" data-bs-interval="4000">
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                    {% for img in hero_images %}
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ forloop.counter0 }}" 
+                            {% if forloop.first %}class="active" aria-current="true"{% endif %} 
+                            aria-label="Slide {{ forloop.counter }}"></button>
+                    {% endfor %}
+                </div>
+                
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    {% for img in hero_images %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ img.image.url }}" alt="{{ img.caption|default:'Gallery Image' }}" class="carousel-image d-block w-100">
+                        {% if img.caption %}
+                        <div class="carousel-caption d-none d-md-block">
+                            <p class="mb-0">{{ img.caption }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- BOOKING FORM - STEP BY STEP WIZARD -->
+    <div id="booking" style="background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); padding: 60px 20px; min-height: 80vh;">
+        <div style="max-width: 600px; margin: 0 auto;">
+            
+            <!-- Section Header -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 8px;">Book Your Appointment</h2>
+                <p style="color: #64748b; font-size: 1rem;">Quick & easy booking in 3 simple steps</p>
+            </div>
+
+            <!-- Booking Card -->
+            <div style="background: white; border-radius: 24px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); overflow: hidden;">
+                
+                <form method="POST" action="{% url 'appointments:confirm_booking' slug=provider.unique_booking_url %}" id="bookingForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="service" id="selectedServiceInput" value="">
+                    
+                    <!-- Progress Bar -->
+                    <div style="background: #f8fafc; padding: 25px 30px; border-bottom: 1px solid #e2e8f0;">
+                        <div class="wizard-progress">
+                            <div class="wizard-step active" data-step="1">
+                                <div class="wizard-dot">1</div>
+                                <span>Service</span>
+                            </div>
+                            <div class="wizard-line" id="line1"></div>
+                            <div class="wizard-step" data-step="2">
+                                <div class="wizard-dot">2</div>
+                                <span>Schedule</span>
+                            </div>
+                            <div class="wizard-line" id="line2"></div>
+                            <div class="wizard-step" data-step="3">
+                                <div class="wizard-dot">3</div>
+                                <span>Details</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 30px;">
+                        
+                        <!-- STEP 1: SERVICE SELECTION -->
+                        <div class="wizard-panel active" id="panel1">
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <div style="font-size: 2.5rem; margin-bottom: 10px;">💆</div>
+                                <h3 style="font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-bottom: 5px;">What service do you need?</h3>
+                                <p style="color: #64748b; font-size: 0.95rem;">Select one service to continue</p>
+                            </div>
+                            
+                            <div class="service-list" id="serviceOptions">
+                                {% for service in services %}
+                                <div class="service-item" onclick="selectServiceWizard(this, {{ service.id }}, '{{ service.service_name|escapejs }}', {{ service.price|floatformat:0 }}, {{ service.duration_minutes }})">
+                                    <div class="service-radio"></div>
+                                    <div class="service-info">
+                                        <div class="service-name">{{ service.service_name }}</div>
+                                        <div class="service-meta">
+                                            <span><i class="bi bi-clock"></i> {{ service.duration_minutes }} min</span>
+                                        </div>
+                                    </div>
+                                    <div class="service-price">₹{{ service.price|floatformat:0 }}</div>
+                                </div>
+                                {% empty %}
+                                <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                    <p style="margin-top: 15px;">No services available</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <button type="button" class="wizard-btn next" id="continueBtn1" onclick="goToStep(2)" disabled>
+                                Continue <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- STEP 2: DATE & TIME -->
+                        <div class="wizard-panel" id="panel2">
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <div style="font-size: 2.5rem; margin-bottom: 10px;">📅</div>
+                                <h3 style="font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-bottom: 5px;">When would you like to visit?</h3>
+                                <p style="color: #64748b; font-size: 0.95rem;">Choose your preferred date and time</p>
+                            </div>
+                            
+                            <!-- Business Hours Info -->
+                            <div style="background: linear-gradient(135deg, #eef2ff 0%, #faf5ff 100%); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 44px; height: 44px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                                    <i class="bi bi-clock-history" style="font-size: 1.3rem; color: #4f46e5;"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">Business Hours</div>
+                                    <div style="color: #64748b; font-size: 0.85rem;">Mon - Sat: 9:00 AM - 7:00 PM</div>
+                                </div>
+                            </div>
+                            
+                            <div class="wizard-field">
+                                <label><i class="bi bi-calendar3"></i> Select Date</label>
+                                <input type="date" name="appointment_date" id="appointmentDate" required min="{% now 'Y-m-d' %}">
+                            </div>
+                            
+                            <div class="wizard-field" style="margin-top: 20px;">
+                                <label><i class="bi bi-clock"></i> Select Time Slot</label>
+                                <p style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0 12px 0;">Available slots based on business hours</p>
+                                <div class="time-slots">
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '09:00', '9:00 AM')">9:00 AM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '10:00', '10:00 AM')">10:00 AM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '11:00', '11:00 AM')">11:00 AM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '12:00', '12:00 PM')">12:00 PM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '13:00', '1:00 PM')">1:00 PM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '14:00', '2:00 PM')">2:00 PM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '15:00', '3:00 PM')">3:00 PM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '16:00', '4:00 PM')">4:00 PM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '17:00', '5:00 PM')">5:00 PM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '18:00', '6:00 PM')">6:00 PM</button>
+                                    <button type="button" class="time-slot" onclick="selectTime(this, '19:00', '7:00 PM')">7:00 PM</button>
+                                </div>
+                                <input type="hidden" name="appointment_time" id="appointmentTime" required>
+                            </div>
+                            
+                            <div class="wizard-buttons">
+                                <button type="button" class="wizard-btn back" onclick="goToStep(1)">
+                                    <i class="bi bi-arrow-left"></i> Back
+                                </button>
+                                <button type="button" class="wizard-btn next" id="continueBtn2" onclick="goToStep(3)" disabled>
+                                    Continue <i class="bi bi-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- STEP 3: YOUR DETAILS -->
+                        <div class="wizard-panel" id="panel3">
+                            <div style="text-align: center; margin-bottom: 25px;">
+                                <div style="font-size: 2.5rem; margin-bottom: 10px;">👤</div>
+                                <h3 style="font-size: 1.4rem; font-weight: 700; color: #1e293b; margin-bottom: 5px;">Almost done!</h3>
+                                <p style="color: #64748b; font-size: 0.95rem;">Enter your contact details</p>
+                            </div>
+                            
+                            <div class="wizard-field">
+                                <label><i class="bi bi-person"></i> Your Name *</label>
+                                <input type="text" name="client_name" id="clientName" placeholder="Enter your full name" value="{{ client_name }}" required>
+                            </div>
+                            
+                            <div class="wizard-field" style="margin-top: 15px;">
+                                <label><i class="bi bi-phone"></i> Phone Number *</label>
+                                <input type="tel" name="client_phone" id="clientPhone" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required>
+                            </div>
+                            
+                            <div class="wizard-field" style="margin-top: 15px;">
+                                <label><i class="bi bi-envelope"></i> Email (Optional)</label>
+                                <input type="email" name="client_email" placeholder="your@email.com" value="{{ client_email }}">
+                            </div>
+                            
+                            <div class="wizard-field" style="margin-top: 15px;">
+                                <label><i class="bi bi-chat-dots"></i> Notes (Optional)</label>
+                                <textarea name="notes" placeholder="Any special requests..." rows="2" maxlength="200"></textarea>
+                            </div>
+
+                            <!-- Booking Summary -->
+                            <div class="booking-summary" id="bookingSummary">
+                                <div class="summary-title"><i class="bi bi-receipt"></i> Booking Summary</div>
+                                <div class="summary-row">
+                                    <span>Service:</span>
+                                    <span id="summaryService">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Duration:</span>
+                                    <span id="summaryDuration">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Date:</span>
+                                    <span id="summaryDate">-</span>
+                                </div>
+                                <div class="summary-row">
+                                    <span>Time:</span>
+                                    <span id="summaryTime">-</span>
+                                </div>
+                                <div class="summary-row" style="border-top: 2px solid #e2e8f0; margin-top: 8px; padding-top: 12px;">
+                                    <span style="font-weight: 600; color: #1e293b;">Total:</span>
+                                    <span id="summaryPrice" style="font-size: 1.2rem; font-weight: 800; color: #4f46e5;">-</span>
+                                </div>
+                            </div>
+                            
+                            <div class="wizard-buttons">
+                                <button type="button" class="wizard-btn back" onclick="goToStep(2)">
+                                    <i class="bi bi-arrow-left"></i> Back
+                                </button>
+                                <button type="submit" class="wizard-btn submit" id="submitBtn">
+                                    <span class="btn-text"><i class="bi bi-check-circle"></i> Confirm Booking</span>
+                                    <span class="btn-loader" style="display: none;"><span class="spinner"></span> Booking...</span>
+                                </button>
+                            </div>
+                            
+                            {% if not user.is_authenticated %}
+                            <p style="text-align: center; margin-top: 15px; color: #94a3b8; font-size: 0.8rem;">
+                                <i class="bi bi-info-circle"></i> You'll need to login to complete booking
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Trust Badges -->
+            <div style="display: flex; justify-content: center; gap: 30px; margin-top: 25px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px; color: #64748b; font-size: 0.85rem;">
+                    <i class="bi bi-shield-check" style="color: #10b981;"></i> Secure
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; color: #64748b; font-size: 0.85rem;">
+                    <i class="bi bi-lightning" style="color: #f59e0b;"></i> Instant Confirm
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px; color: #64748b; font-size: 0.85rem;">
+                    <i class="bi bi-x-circle" style="color: #3b82f6;"></i> Free Cancel
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT SECTION - MODERN REDESIGN -->
+    {% if provider.about_us %}
+    <div id="about-section" class="about-section">
+        <div class="about-container">
+            <div class="about-header">
+                <div class="about-badge">
+                    <i class="bi bi-info-circle"></i> Get to Know Us
+                </div>
+                <h2 class="about-title">About Us</h2>
+                <p class="about-subtitle">Dedicated to providing exceptional service and creating memorable experiences for every client.</p>
+            </div>
+            
+            <div class="about-content">
+                <div class="about-text">
+                    {{ provider.about_us }}
+                </div>
+                
+                <div class="about-stats">
+                    {% if provider.phone %}
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <div class="stat-value">Call Us</div>
+                        <a href="tel:{{ provider.phone }}" style="color: #38bdf8; text-decoration: none; font-size: 0.95rem;">{{ provider.phone }}</a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if provider.city %}
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div class="stat-value">Location</div>
+                        <div class="stat-label">{{ provider.city }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <div class="stat-value">Hours</div>
+                        <div class="stat-label">Mon-Sat: 9AM-7PM</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <div class="stat-value">5.0</div>
+                        <div class="stat-label">Customer Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- TESTIMONIALS - MODERN REDESIGN -->
+    {% if testimonials %}
+    <div class="testimonials-section">
+        <div class="testimonials-container">
+            <div class="testimonials-header">
+                <div class="testimonials-badge">
+                    <i class="bi bi-star-fill"></i> Trusted Reviews
+                </div>
+                <h2 class="testimonials-title">What Our Clients Say</h2>
+                <p class="testimonials-subtitle">Real stories from real customers who love our services</p>
+            </div>
+            
+            <div class="testimonials-grid-modern">
+                {% for testimonial in testimonials %}
+                <div class="testimonial-card-modern">
+                    <i class="bi bi-quote testimonial-quote-icon"></i>
+                    
+                    <div class="testimonial-stars">
+                        {% for i in "x"|rjust:testimonial.rating %}<i class="bi bi-star-fill"></i>{% endfor %}
+                    </div>
+                    
+                    <p class="testimonial-text-modern">"{{ testimonial.testimonial_text }}"</p>
+                    
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">
+                            {{ testimonial.client_name|slice:":1"|upper }}
+                        </div>
+                        <div class="testimonial-author-info">
+                            <div class="testimonial-author-name">{{ testimonial.client_name }}</div>
+                            <div class="testimonial-author-title">Verified Customer</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- TEAM - MODERN REDESIGN -->
+    {% if team_members %}
+    <div id="team-section" class="team-section">
+        <div class="team-container">
+            <div class="team-header">
+                <div class="team-badge">
+                    <i class="bi bi-people-fill"></i> Our Experts
+                </div>
+                <h2 class="team-title">Meet Our Team</h2>
+                <p class="team-subtitle">Skilled professionals dedicated to making you look and feel amazing</p>
+            </div>
+            
+            <div class="team-grid-modern">
+                {% for member in team_members %}
+                <div class="team-card-modern">
+                    <div class="team-photo-wrapper">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" alt="{{ member.name }}" class="team-photo-modern">
+                        {% else %}
+                        <div class="team-photo-placeholder">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        {% endif %}
+                        <div class="team-status"></div>
+                    </div>
+                    <div class="team-name">{{ member.name }}</div>
+                    <div class="team-role">{{ member.role_title }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- FOOTER -->
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <!-- Brand & Description -->
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    {% if provider.logo %}
+                    <img src="{{ provider.logo.url }}" alt="{{ provider.business_name }}">
+                    {% else %}
+                    <div class="footer-logo-placeholder">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    {% endif %}
+                    <span>{{ provider.business_name }}</span>
+                </div>
+                <p class="footer-description">{{ provider.mission_statement|default:"Providing quality services with care and professionalism." }}</p>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#booking"><i class="bi bi-calendar-check"></i> Book Appointment</a></li>
+                    <li><a href="#"><i class="bi bi-info-circle"></i> About Us</a></li>
+                    <li><a href="#"><i class="bi bi-grid"></i> Our Services</a></li>
+                    <li><a href="#"><i class="bi bi-chat-quote"></i> Testimonials</a></li>
+                </ul>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <ul>
+                    {% if provider.phone %}
+                    <li><a href="tel:{{ provider.phone }}"><i class="bi bi-telephone-fill"></i> {{ provider.phone }}</a></li>
+                    {% endif %}
+                    {% if provider.email %}
+                    <li><a href="mailto:{{ provider.email }}"><i class="bi bi-envelope-fill"></i> {{ provider.email }}</a></li>
+                    {% endif %}
+                    {% if provider.city %}
+                    <li><span><i class="bi bi-geo-alt-fill"></i> {{ provider.city }}</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    {% if provider.phone %}
+                    <a href="https://wa.me/91{{ provider.phone }}" class="social-icon whatsapp" target="_blank" title="WhatsApp">
+                        <i class="bi bi-whatsapp"></i>
+                    </a>
+                    {% endif %}
+                    <a href="#" class="social-icon facebook" title="Facebook">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                    <a href="#" class="social-icon instagram" title="Instagram">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                    <a href="#" class="social-icon twitter" title="Twitter">
+                        <i class="bi bi-twitter-x"></i>
+                    </a>
+                    <a href="#" class="social-icon youtube" title="YouTube">
+                        <i class="bi bi-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p>&copy; 2024 {{ provider.business_name }}. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <style>
+        /* MODERN FOOTER STYLES */
+        .modern-footer {
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            margin-top: 0;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .footer-brand .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .footer-brand .footer-logo img {
+            width: 45px;
+            height: 45px;
+            max-width: 45px;
+            max-height: 45px;
+            min-width: 45px;
+            min-height: 45px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        
+        .footer-brand .footer-logo-placeholder {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .footer-brand .footer-logo span {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .footer-description {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            max-width: 280px;
+        }
+        
+        .footer-links h4,
+        .footer-contact h4,
+        .footer-social h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links ul,
+        .footer-contact ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li,
+        .footer-contact li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a,
+        .footer-contact a,
+        .footer-contact span {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover,
+        .footer-contact a:hover {
+            color: #14b8a6;
+            transform: translateX(5px);
+        }
+        
+        .footer-links a i,
+        .footer-contact a i,
+        .footer-contact span i {
+            font-size: 0.9rem;
+            color: #14b8a6;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .social-icon:hover {
+            transform: translateY(-3px);
+        }
+        
+        .social-icon.whatsapp:hover {
+            background: #25d366;
+        }
+        
+        .social-icon.facebook:hover {
+            background: #1877f2;
+        }
+        
+        .social-icon.instagram:hover {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+        
+        .social-icon.twitter:hover {
+            background: #000000;
+        }
+        
+        .social-icon.youtube:hover {
+            background: #ff0000;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 20px 30px;
+        }
+        
+        .footer-bottom-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .footer-bottom p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .footer-bottom-links {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .footer-bottom-links a {
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-bottom-links a:hover {
+            color: #14b8a6;
+        }
+        
+        /* Mobile Responsive Footer */
+        @media (max-width: 992px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .footer-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 40px 20px 30px;
+            }
+            
+            .footer-brand .footer-logo {
+                justify-content: center;
+            }
+            
+            .footer-description {
+                max-width: 100%;
+                margin: 0 auto;
+            }
+            
+            .footer-links a,
+            .footer-contact a,
+            .footer-contact span {
+                justify-content: center;
+            }
+            
+            .social-icons {
+                justify-content: center;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Service Selection Function
+        function selectService(card, serviceId) {
+            // Remove selected from all cards
+            document.querySelectorAll('.service-card').forEach(c => c.classList.remove('selected'));
+            
+            // Add selected to clicked card
+            card.classList.add('selected');
+            
+            // Check the radio
+            document.getElementById('service_' + serviceId).checked = true;
+            
+            // Update progress
+            updateProgress(1);
+        }
+        
+        // Set Time Function
+        function setTime(time) {
+            document.getElementById('appointmentTime').value = time;
+            
+            // Update chips
+            document.querySelectorAll('.time-chip').forEach(chip => chip.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            updateProgress(2);
+        }
+        
+        // ==========================
+        // WIZARD BOOKING SYSTEM
+        // ==========================
+        
+        let currentStep = 1;
+        let selectedService = null;
+        let selectedTime = null;
+        let selectedTimeDisplay = null;
+        
+        // Go to specific step
+        function goToStep(step) {
+            // Validate before moving forward
+            if (step > currentStep) {
+                if (currentStep === 1 && !selectedService) {
+                    alert('Please select a service first');
+                    return;
+                }
+                if (currentStep === 2) {
+                    const date = document.getElementById('appointmentDate').value;
+                    if (!date) {
+                        alert('Please select a date');
+                        return;
+                    }
+                    if (!selectedTime) {
+                        alert('Please select a time slot');
+                        return;
+                    }
+                }
+            }
+            
+            currentStep = step;
+            
+            // Update panels
+            document.querySelectorAll('.wizard-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById('panel' + step).classList.add('active');
+            
+            // Update progress dots
+            document.querySelectorAll('.wizard-step').forEach((stepEl, index) => {
+                stepEl.classList.remove('active', 'completed');
+                if (index + 1 < step) {
+                    stepEl.classList.add('completed');
+                } else if (index + 1 === step) {
+                    stepEl.classList.add('active');
+                }
+            });
+            
+            // Update lines
+            document.querySelectorAll('.wizard-line').forEach((line, index) => {
+                if (index < step - 1) {
+                    line.classList.add('active');
+                } else {
+                    line.classList.remove('active');
+                }
+            });
+            
+            // Update summary on step 3
+            if (step === 3) {
+                updateSummary();
+            }
+            
+            // Scroll to top of form
+            document.getElementById('booking').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Select service in wizard
+        function selectServiceWizard(element, serviceId, serviceName, servicePrice, serviceDuration) {
+            // Remove selected from all
+            document.querySelectorAll('.service-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Add selected to clicked
+            element.classList.add('selected');
+            
+            // Set hidden input
+            document.getElementById('selectedServiceInput').value = serviceId;
+            
+            // Store selected service info
+            selectedService = {
+                id: serviceId,
+                name: serviceName,
+                price: servicePrice,
+                duration: serviceDuration
+            };
+            
+            // Enable continue button
+            document.getElementById('continueBtn1').disabled = false;
+        }
+        
+        // Select time slot
+        function selectTime(element, time, displayTime) {
+            // Remove selected from all
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            
+            // Add selected to clicked
+            element.classList.add('selected');
+            
+            // Set hidden input
+            document.getElementById('appointmentTime').value = time;
+            
+            // Store selected time (both value and display)
+            selectedTime = time;
+            selectedTimeDisplay = displayTime || time;
+            
+            // Enable continue button
+            document.getElementById('continueBtn2').disabled = false;
+        }
+        
+        // Update booking summary
+        function updateSummary() {
+            if (selectedService) {
+                document.getElementById('summaryService').textContent = selectedService.name;
+                document.getElementById('summaryDuration').textContent = selectedService.duration + ' min';
+                document.getElementById('summaryPrice').textContent = '₹' + selectedService.price;
+            }
+            
+            const date = document.getElementById('appointmentDate').value;
+            if (date) {
+                const dateObj = new Date(date + 'T00:00:00');
+                const formattedDate = dateObj.toLocaleDateString('en-IN', { 
+                    weekday: 'short', 
+                    day: 'numeric', 
+                    month: 'short',
+                    year: 'numeric'
+                });
+                document.getElementById('summaryDate').textContent = formattedDate;
+            }
+            
+            if (selectedTimeDisplay) {
+                document.getElementById('summaryTime').textContent = selectedTimeDisplay;
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set minimum date for date picker
+            const dateInput = document.getElementById('appointmentDate');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.setAttribute('min', today);
+                
+                // Enable time slots when date selected
+                dateInput.addEventListener('change', function() {
+                    document.querySelectorAll('.time-slot').forEach(slot => {
+                        slot.style.opacity = '1';
+                        slot.style.pointerEvents = 'auto';
+                    });
+                });
+            }
+            
+            // Phone input validation
+            const phoneInput = document.querySelector('input[name="client_phone"]');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+                });
+            }
+            
+            // Auto-select if only one service
+            const serviceItems = document.querySelectorAll('.service-item');
+            if (serviceItems.length === 1) {
+                serviceItems[0].click();
+            }
+        });
+        
+        // Form submission
+        const bookingForm = document.getElementById('bookingForm');
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', function(e) {
+                const submitBtn = document.getElementById('submitBtn');
+                
+                // Validate name
+                const name = document.querySelector('input[name="client_name"]').value;
+                if (!name || name.length < 2) {
+                    e.preventDefault();
+                    alert('Please enter your name');
+                    return false;
+                }
+                
+                // Validate phone
+                const phone = document.querySelector('input[name="client_phone"]').value;
+                if (!phone || phone.length !== 10) {
+                    e.preventDefault();
+                    alert('Please enter a valid 10-digit phone number');
+                    return false;
+                }
+                
+                // Show loading state
+                submitBtn.innerHTML = '<span class="spinner"></span> Booking...';
+                submitBtn.disabled = true;
+            });
+        }
+        
+        // ========================================
+        // MOBILE HAMBURGER MENU FUNCTIONS
+        // ========================================
+        
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const hamburgerBtn = document.querySelector('.hamburger-btn');
+        
+        function toggleMobileMenu() {
+            const isOpen = mobileMenuOverlay.classList.contains('active');
+            
+            if (isOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+        
+        function openMobileMenu() {
+            mobileMenuOverlay.classList.add('active');
+            mobileMenu.classList.add('active');
+            hamburgerBtn.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMobileMenu() {
+            mobileMenuOverlay.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            hamburgerBtn.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // Close menu when clicking on overlay background
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', function(e) {
+                if (e.target === mobileMenuOverlay) {
+                    closeMobileMenu();
+                }
+            });
+        }
+        
+        // Close menu when clicking nav links
+        document.querySelectorAll('.mobile-nav-link, .mobile-menu-auth .btn').forEach(link => {
+            link.addEventListener('click', function() {
+                // Close menu with slight delay for visual feedback
+                setTimeout(() => {
+                    closeMobileMenu();
+                }, 100);
+            });
+        });
+        
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && mobileMenuOverlay.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Handle window resize - close mobile menu if resizing to desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768 && mobileMenuOverlay.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        });
+    </script>
+</body>
+</html>
