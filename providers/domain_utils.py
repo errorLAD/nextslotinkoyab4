@@ -44,6 +44,10 @@ def get_dns_config_for_provider(provider):
     domain_parts = domain.split('.')
     
     # Determine subdomain and root domain
+    # Root domain = only 2 parts (e.g., urbanunit.in)
+    # Subdomain = more than 2 parts (e.g., book.urbanunit.in)
+    is_root_domain = len(domain_parts) == 2
+    
     if len(domain_parts) > 2:
         subdomain = domain_parts[0]
         root_domain = '.'.join(domain_parts[1:])
@@ -55,7 +59,6 @@ def get_dns_config_for_provider(provider):
     provider_unique_id = generate_provider_unique_id(provider.id)
     
     # CNAME target - should point to the HOSTING server (Koyeb, Railway, etc.)
-    # NOT the DEFAULT_DOMAIN (which is the branded domain)
     cname_target = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
     
     # TXT verification record - unique per provider
@@ -65,15 +68,28 @@ def get_dns_config_for_provider(provider):
     # Alternative: Provider-specific TXT name for multi-provider setup
     txt_record_name_unique = f"_bv-{provider_unique_id}"
     
+    # For root domains, we need different instructions
+    # Root domains cannot have CNAME records (DNS limitation)
+    # Cloudflare uses "CNAME Flattening" to handle this
+    if is_root_domain:
+        record_type = 'CNAME (Flattened)'
+        record_note = 'Cloudflare will automatically flatten this CNAME to A records'
+    else:
+        record_type = 'CNAME'
+        record_note = 'Standard CNAME record'
+    
     return {
         'provider_id': provider.id,
         'provider_unique_id': provider_unique_id,
         'full_domain': domain,
         'subdomain': subdomain,
         'root_domain': root_domain,
+        'is_root_domain': is_root_domain,
         'cname': {
             'name': subdomain,
             'target': cname_target,
+            'type': record_type,
+            'note': record_note,
             'proxy_status': 'Proxied (Orange)',
             'description': f'Points your domain to our booking server'
         },
@@ -89,21 +105,33 @@ def get_dns_config_for_provider(provider):
             'proxy_status': 'DNS Only (Grey)',
             'description': 'Alternative verification record (provider-specific)'
         },
-        'instructions': get_dns_instructions(subdomain, cname_target, txt_record_name, txt_record_value)
+        'instructions': get_dns_instructions(subdomain, cname_target, txt_record_name, txt_record_value, is_root_domain)
     }
 
 
-def get_dns_instructions(subdomain, cname_target, txt_name, txt_value):
+def get_dns_instructions(subdomain, cname_target, txt_name, txt_value, is_root_domain=False):
     """Generate human-readable DNS setup instructions."""
-    return {
-        'step1': f'Go to your DNS provider (Cloudflare recommended)',
-        'step2': f'Add CNAME record: Name="{subdomain}", Target="{cname_target}"',
-        'step3': f'Add TXT record: Name="{txt_name}", Value="{txt_value}"',
-        'step4': 'Enable Cloudflare proxy (orange cloud) for CNAME',
-        'step5': 'Set SSL/TLS encryption mode to "Full (Strict)"',
-        'step6': 'Wait for DNS propagation (5 mins to 24 hours)',
-        'step7': 'Click "Verify Domain" button to complete setup'
-    }
+    if is_root_domain:
+        return {
+            'step1': 'Go to Cloudflare Dashboard → Select your domain → DNS',
+            'step2': f'Add CNAME record: Name="@", Target="{cname_target}"',
+            'step2_note': 'Cloudflare will automatically flatten this to A records (CNAME Flattening)',
+            'step3': f'Add TXT record: Name="{txt_name}", Value="{txt_value}"',
+            'step4': 'IMPORTANT: Enable Cloudflare proxy (orange cloud) - Required for root domains!',
+            'step5': 'Set SSL/TLS encryption mode to "Full (Strict)"',
+            'step6': 'Wait for DNS propagation (5 mins to 24 hours)',
+            'step7': 'Click "Verify Domain" button to complete setup'
+        }
+    else:
+        return {
+            'step1': 'Go to your DNS provider (Cloudflare recommended)',
+            'step2': f'Add CNAME record: Name="{subdomain}", Target="{cname_target}"',
+            'step3': f'Add TXT record: Name="{txt_name}", Value="{txt_value}"',
+            'step4': 'Enable Cloudflare proxy (orange cloud) for CNAME',
+            'step5': 'Set SSL/TLS encryption mode to "Full (Strict)"',
+            'step6': 'Wait for DNS propagation (5 mins to 24 hours)',
+            'step7': 'Click "Verify Domain" button to complete setup'
+        }
 
 def verify_domain_dns(domain, expected_cname=None, expected_txt=None):
     """
@@ -123,12 +151,16 @@ def verify_domain_dns(domain, expected_cname=None, expected_txt=None):
         'cname_verified': False,
         'txt_verified': False,
         'a_record_found': False,
+        'is_root_domain': False,
         'messages': []
     }
     
     # Extract root domain for TXT record lookup
     # e.g., www.urbanunit.in -> urbanunit.in
     domain_parts = domain.split('.')
+    is_root_domain = len(domain_parts) == 2
+    results['is_root_domain'] = is_root_domain
+    
     if len(domain_parts) > 2:
         root_domain = '.'.join(domain_parts[-2:])  # Get last 2 parts (urbanunit.in)
     else:
@@ -154,9 +186,13 @@ def verify_domain_dns(domain, expected_cname=None, expected_txt=None):
                     if a_records:
                         results['a_record_found'] = True
                         results['cname_verified'] = True  # Accept A record as valid (Cloudflare proxy)
-                        results['messages'].append('A record found (Cloudflare proxy detected).')
+                        a_ips = [str(r) for r in a_records]
+                        results['messages'].append(f'A record found: {", ".join(a_ips)} (Cloudflare proxy detected).')
                 except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
-                    results['messages'].append('No CNAME or A record found for ' + domain)
+                    if is_root_domain:
+                        results['messages'].append(f'No A record found for root domain {domain}. In Cloudflare, add CNAME with Name="@" and Target="{expected_cname}" with Proxy ON.')
+                    else:
+                        results['messages'].append('No CNAME or A record found for ' + domain)
             except dns.resolver.NoNameservers:
                 results['messages'].append('DNS servers not responding.')
         
@@ -166,7 +202,6 @@ def verify_domain_dns(domain, expected_cname=None, expected_txt=None):
             txt_locations = [
                 f"_booking-verify.{root_domain}",      # _booking-verify.urbanunit.in (most common)
                 f"_booking-verify.{domain}",           # _booking-verify.www.urbanunit.in
-                f"_booking-verify",                     # Just _booking-verify (relative)
                 root_domain,                            # urbanunit.in (main domain TXT)
                 domain,                                 # www.urbanunit.in (subdomain TXT)
             ]
@@ -196,17 +231,21 @@ def verify_domain_dns(domain, expected_cname=None, expected_txt=None):
                 results['messages'].append(f'TXT record not found. Create TXT record with name "_booking-verify" at {root_domain}')
         
         # Determine overall success
-        # For Cloudflare proxied domains (A record), we accept without TXT if CNAME/A is valid
-        if results['cname_verified']:
-            if results['a_record_found']:
-                # Cloudflare proxy detected - TXT is optional but helpful
-                results['success'] = True
-                if not results['txt_verified']:
-                    results['messages'].append('Verified via Cloudflare proxy. TXT record optional.')
-            elif results['txt_verified']:
-                results['success'] = True
-            elif expected_txt is None:
-                results['success'] = True
+        # Option 1: CNAME/A record verified + TXT verified = Success
+        # Option 2: For Cloudflare proxied (A record), TXT verification is sufficient
+        # Option 3: For root domains with TXT verified, we trust ownership
+        if results['cname_verified'] and results['txt_verified']:
+            results['success'] = True
+        elif results['a_record_found'] and results['txt_verified']:
+            results['success'] = True
+            results['messages'].append('Verified via Cloudflare proxy with TXT record.')
+        elif results['txt_verified'] and is_root_domain:
+            # For root domains, if TXT is verified, we can trust ownership
+            # The CNAME might show as A record due to Cloudflare flattening
+            results['success'] = True
+            results['messages'].append('Root domain verified via TXT record. Please ensure CNAME is configured in Cloudflare with proxy enabled.')
+        elif results['cname_verified'] and not expected_txt:
+            results['success'] = True
         
         return results
         
