@@ -10,12 +10,13 @@ from django.core.exceptions import PermissionDenied
 from django.utils.translation import gettext as _
 
 from .models import ServiceProvider
-from .domain_utils import setup_custom_domain, verify_domain_ownership, generate_verification_code
+from .domain_utils import setup_custom_domain, verify_domain_ownership, generate_verification_code, get_dns_config_for_provider
 
 @login_required
 def custom_domain_page(request):
     """
     Dedicated page for managing custom domain settings.
+    Provides unique DNS configuration for each provider.
     """
     if not hasattr(request.user, 'is_provider') or not request.user.is_provider:
         raise PermissionDenied("You don't have permission to access this page.")
@@ -26,10 +27,14 @@ def custom_domain_page(request):
     if not is_pro:
         messages.info(request, 'Custom domains are only available for PRO users. Upgrade to PRO to use this feature.')
     
+    # Get provider-specific DNS configuration
+    dns_config = get_dns_config_for_provider(provider) if provider.custom_domain else None
+    
     context = {
         'provider': provider,
         'default_domain': settings.DEFAULT_DOMAIN,
         'is_pro': is_pro,
+        'dns_config': dns_config,
     }
     
     return render(request, 'providers/custom_domain.html', context)
@@ -51,10 +56,14 @@ def domain_settings(request):
     if not is_pro:
         messages.info(request, 'Custom domains are only available for PRO users. Upgrade to PRO to use this feature.')
     
+    # Get provider-specific DNS configuration
+    dns_config = get_dns_config_for_provider(provider) if provider.custom_domain else None
+    
     context = {
         'provider': provider,
         'default_domain': settings.DEFAULT_DOMAIN,
         'is_pro': is_pro,
+        'dns_config': dns_config,
     }
     
     return render(request, 'providers/domain/settings.html', context)

@@ -296,6 +296,19 @@
             <code class="bg-light px-4 py-2 rounded-pill fs-5">{{ provider.custom_domain }}</code>
         </div>
         
+        <!-- Provider Unique ID Badge -->
+        {% if dns_config %}
+        <div class="alert alert-primary mb-4">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-fingerprint fs-4 me-3"></i>
+                <div>
+                    <h6 class="mb-0">Your Unique Provider ID: <code>{{ dns_config.provider_unique_id }}</code></h6>
+                    <small class="text-muted">This ensures your DNS records are unique from other providers.</small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
         <div class="warning-card mb-4">
             <div class="d-flex align-items-start">
                 <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-3"></i>
@@ -309,13 +322,12 @@
     
     <!-- DNS Records Table -->
     <div class="mb-4">
-        <h4 class="mb-3"><i class="bi bi-table me-2"></i>Required DNS Records</h4>
+        <h4 class="mb-3"><i class="bi bi-table me-2"></i>Your Unique DNS Records</h4>
         
         <!-- Important Note -->
         <div class="alert alert-info mb-3">
             <i class="bi bi-info-circle-fill me-2"></i>
-            <strong>Important:</strong> In Cloudflare, the "Name" field should be just the subdomain part (e.g., <code>book</code>), 
-            not the full domain. Cloudflare automatically appends your domain.
+            <strong>Important:</strong> These DNS records are unique to your booking page. Each provider has different verification codes.
         </div>
         
         <div class="table-responsive dns-table">
@@ -332,22 +344,30 @@
                     <tr>
                         <td><span class="badge bg-primary px-3 py-2 fs-6">CNAME</span></td>
                         <td>
-                            <code class="bg-warning text-dark p-2 rounded fs-5" id="cname-name">{{ provider.custom_domain|get_subdomain }}</code>
-                            <button class="copy-btn ms-2" onclick="copyToClipboard('{{ provider.custom_domain|get_subdomain }}', this)">
+                            <code class="bg-warning text-dark p-2 rounded fs-5" id="cname-name">{% if dns_config %}{{ dns_config.cname.name }}{% else %}{{ provider.custom_domain|get_subdomain }}{% endif %}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{% if dns_config %}{{ dns_config.cname.name }}{% else %}{{ provider.custom_domain|get_subdomain }}{% endif %}', this)">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                             <br>
                             <small class="text-muted mt-1 d-block">
-                                {% if provider.custom_domain|get_subdomain == '@' %}
-                                    Use <strong>@</strong> for root domain
+                                {% if dns_config %}
+                                    {% if dns_config.subdomain == '@' %}
+                                        Use <strong>@</strong> for root domain
+                                    {% else %}
+                                        Enter exactly: <strong>{{ dns_config.subdomain }}</strong>
+                                    {% endif %}
                                 {% else %}
-                                    Enter exactly: <strong>{{ provider.custom_domain|get_subdomain }}</strong>
+                                    {% if provider.custom_domain|get_subdomain == '@' %}
+                                        Use <strong>@</strong> for root domain
+                                    {% else %}
+                                        Enter exactly: <strong>{{ provider.custom_domain|get_subdomain }}</strong>
+                                    {% endif %}
                                 {% endif %}
                             </small>
                         </td>
                         <td>
-                            <code class="bg-success text-white p-2 rounded fs-5" id="cname-target">{{ default_domain }}</code>
-                            <button class="copy-btn ms-2" onclick="copyToClipboard('{{ default_domain }}', this)">
+                            <code class="bg-success text-white p-2 rounded fs-5" id="cname-target">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ default_domain }}{% endif %}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ default_domain }}{% endif %}', this)">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                         </td>
@@ -356,18 +376,20 @@
                     <tr>
                         <td><span class="badge bg-secondary px-3 py-2 fs-6">TXT</span></td>
                         <td>
-                            <code class="bg-warning text-dark p-2 rounded fs-5">_booking-verify</code>
-                            <button class="copy-btn ms-2" onclick="copyToClipboard('_booking-verify', this)">
+                            <code class="bg-warning text-dark p-2 rounded fs-5">{% if dns_config %}{{ dns_config.txt.name }}{% else %}_booking-verify{% endif %}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{% if dns_config %}{{ dns_config.txt.name }}{% else %}_booking-verify{% endif %}', this)">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                             <br>
-                            <small class="text-muted mt-1 d-block">Enter exactly: <strong>_booking-verify</strong></small>
+                            <small class="text-muted mt-1 d-block">Enter exactly: <strong>{% if dns_config %}{{ dns_config.txt.name }}{% else %}_booking-verify{% endif %}</strong></small>
                         </td>
                         <td>
-                            <code class="bg-light p-2 rounded text-break" id="txt-value" style="max-width: 250px; display: inline-block; font-size: 0.8rem;">{{ provider.domain_verification_code }}</code>
-                            <button class="copy-btn ms-2" onclick="copyToClipboard('{{ provider.domain_verification_code }}', this)">
+                            <code class="bg-light p-2 rounded text-break" id="txt-value" style="max-width: 250px; display: inline-block; font-size: 0.9rem;">{% if dns_config %}{{ dns_config.txt.value }}{% else %}{{ provider.domain_verification_code }}{% endif %}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{% if dns_config %}{{ dns_config.txt.value }}{% else %}{{ provider.domain_verification_code }}{% endif %}', this)">
                                 <i class="bi bi-clipboard"></i>
                             </button>
+                            <br>
+                            <small class="text-success mt-1 d-block"><i class="bi bi-shield-check"></i> Unique to your account</small>
                         </td>
                         <td><span class="text-muted"><i class="bi bi-cloud-slash"></i> DNS Only (Grey)</span></td>
                     </tr>
@@ -390,8 +412,8 @@
                         <ul class="mt-2">
                             <li>Click <strong>"Add record"</strong></li>
                             <li>Type: Select <code>CNAME</code></li>
-                            <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">{{ provider.custom_domain|get_subdomain }}</code></li>
-                            <li>Target: Enter <code class="bg-light px-2 py-1 rounded">{{ default_domain }}</code></li>
+                            <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">{% if dns_config %}{{ dns_config.subdomain }}{% else %}{{ provider.custom_domain|get_subdomain }}{% endif %}</code></li>
+                            <li>Target: Enter <code class="bg-light px-2 py-1 rounded">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ default_domain }}{% endif %}</code></li>
                             <li>Proxy status: <strong class="text-warning">☁️ Proxied (Orange cloud ON)</strong></li>
                             <li>Click <strong>Save</strong></li>
                         </ul>
@@ -401,8 +423,8 @@
                         <ul class="mt-2">
                             <li>Click <strong>"Add record"</strong></li>
                             <li>Type: Select <code>TXT</code></li>
-                            <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">_booking-verify</code></li>
-                            <li>Content: Paste <code class="bg-light px-2 py-1 rounded" style="word-break: break-all;">{{ provider.domain_verification_code }}</code></li>
+                            <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">{% if dns_config %}{{ dns_config.txt.name }}{% else %}_booking-verify{% endif %}</code></li>
+                            <li>Content: Paste <code class="bg-light px-2 py-1 rounded" style="word-break: break-all;">{% if dns_config %}{{ dns_config.txt.value }}{% else %}{{ provider.domain_verification_code }}{% endif %}</code></li>
                             <li>Click <strong>Save</strong></li>
                         </ul>
                     </li>

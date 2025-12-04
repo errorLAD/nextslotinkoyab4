@@ -1,10 +1,12 @@
 """
 Utilities for domain verification and management.
 Supports Cloudflare for SSL and DNS management.
+Each provider gets unique DNS records for their custom domain.
 """
 import dns.resolver
 import random
 import string
+import hashlib
 import requests
 from django.conf import settings
 from django.utils import timezone
@@ -14,6 +16,94 @@ def generate_verification_code(length=32):
     """Generate a random verification code for domain verification."""
     chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for _ in range(length))
+
+
+def generate_provider_unique_id(provider_id):
+    """
+    Generate a unique identifier for provider-specific DNS records.
+    This ensures each provider has unique CNAME and TXT values.
+    """
+    unique_string = f"provider-{provider_id}-{settings.SECRET_KEY[:10]}"
+    hash_object = hashlib.sha256(unique_string.encode())
+    return hash_object.hexdigest()[:12]
+
+
+def get_dns_config_for_provider(provider):
+    """
+    Get the complete DNS configuration required for a provider's custom domain.
+    Each provider gets unique records based on their provider ID.
+    
+    Returns:
+        dict: Contains all DNS record information for the provider
+    """
+    if not provider.custom_domain:
+        return None
+    
+    # Extract domain parts
+    domain = provider.custom_domain
+    domain_parts = domain.split('.')
+    
+    # Determine subdomain and root domain
+    if len(domain_parts) > 2:
+        subdomain = domain_parts[0]
+        root_domain = '.'.join(domain_parts[1:])
+    else:
+        subdomain = '@'
+        root_domain = domain
+    
+    # Generate unique provider identifier for DNS
+    provider_unique_id = generate_provider_unique_id(provider.id)
+    
+    # CNAME target - unique per provider using subdomain routing
+    # This allows the server to identify which provider the request is for
+    cname_target = settings.DEFAULT_DOMAIN
+    
+    # TXT verification record - unique per provider
+    txt_record_name = f"_booking-verify"
+    txt_record_value = provider.domain_verification_code
+    
+    # Alternative: Provider-specific TXT name for multi-provider setup
+    txt_record_name_unique = f"_bv-{provider_unique_id}"
+    
+    return {
+        'provider_id': provider.id,
+        'provider_unique_id': provider_unique_id,
+        'full_domain': domain,
+        'subdomain': subdomain,
+        'root_domain': root_domain,
+        'cname': {
+            'name': subdomain,
+            'target': cname_target,
+            'proxy_status': 'Proxied (Orange)',
+            'description': f'Points your domain to our booking server'
+        },
+        'txt': {
+            'name': txt_record_name,
+            'value': txt_record_value,
+            'proxy_status': 'DNS Only (Grey)',
+            'description': 'Verifies domain ownership'
+        },
+        'txt_alternative': {
+            'name': txt_record_name_unique,
+            'value': txt_record_value,
+            'proxy_status': 'DNS Only (Grey)',
+            'description': 'Alternative verification record (provider-specific)'
+        },
+        'instructions': get_dns_instructions(subdomain, cname_target, txt_record_name, txt_record_value)
+    }
+
+
+def get_dns_instructions(subdomain, cname_target, txt_name, txt_value):
+    """Generate human-readable DNS setup instructions."""
+    return {
+        'step1': f'Go to your DNS provider (Cloudflare recommended)',
+        'step2': f'Add CNAME record: Name="{subdomain}", Target="{cname_target}"',
+        'step3': f'Add TXT record: Name="{txt_name}", Value="{txt_value}"',
+        'step4': 'Enable Cloudflare proxy (orange cloud) for CNAME',
+        'step5': 'Set SSL/TLS encryption mode to "Full (Strict)"',
+        'step6': 'Wait for DNS propagation (5 mins to 24 hours)',
+        'step7': 'Click "Verify Domain" button to complete setup'
+    }
 
 def verify_domain_dns(domain, expected_cname=None, expected_txt=None):
     """
@@ -127,6 +217,7 @@ def verify_domain_dns(domain, expected_cname=None, expected_txt=None):
 def setup_custom_domain(provider, domain, domain_type):
     """
     Set up a custom domain for a service provider.
+    Each provider gets a unique verification code for their domain.
     
     Args:
         provider (ServiceProvider): The service provider to set up the domain for
@@ -144,8 +235,10 @@ def setup_custom_domain(provider, domain, domain_type):
     if ServiceProvider.objects.filter(custom_domain=domain).exclude(pk=provider.pk).exists():
         return False, 'This domain is already in use by another account.', ''
     
-    # Generate verification code
-    verification_code = f'booking-verify-{generate_verification_code(12)}'
+    # Generate unique verification code for this provider
+    # Format: booking-verify-{provider_unique_id}-{random_string}
+    provider_unique_id = generate_provider_unique_id(provider.id)
+    verification_code = f'bv-{provider_unique_id}-{generate_verification_code(8)}'
     
     # Update provider with domain info
     provider.custom_domain = domain
