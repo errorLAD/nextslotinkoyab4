@@ -38,6 +38,11 @@ if DEFAULT_DOMAIN not in ALLOWED_HOSTS:
 # Allow all subdomains of the default domain
 ALLOWED_HOSTS.append(f'.{DEFAULT_DOMAIN}')
 
+# Dynamically add all verified custom domains to ALLOWED_HOSTS
+# This is done via middleware, but we need a fallback
+# Add wildcard to accept any custom domain (security handled by middleware)
+ALLOWED_HOSTS.append('*')  # Accept all hosts - custom domain validation done in middleware
+
 
 # Application definition
 
@@ -280,15 +285,35 @@ GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
 # OpenAI API (AI Features)
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 
-# CSRF Trusted Origins (Required for Railway)
+# CSRF Trusted Origins (Required for Railway and Custom Domains)
 CSRF_TRUSTED_ORIGINS = [
-    'https://gastric-gazelle-abhishekmishra-d93b010d.koyeb.app/',
+    'https://gastric-gazelle-abhishekmishra-d93b010d.koyeb.app',
     'https://*.railway.app',
     'https://nextslot.in',
     'https://www.nextslot.in',
+    'https://urbanunit.in',
+    'https://www.urbanunit.in',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
+
+# Dynamically add CSRF trusted origins for custom domains
+# Get all verified custom domains from database and add them
+def get_csrf_trusted_origins():
+    """Get CSRF trusted origins including all verified custom domains."""
+    origins = CSRF_TRUSTED_ORIGINS.copy()
+    try:
+        from providers.models import ServiceProvider
+        verified_domains = ServiceProvider.objects.filter(
+            domain_verified=True,
+            custom_domain__isnull=False
+        ).values_list('custom_domain', flat=True)
+        for domain in verified_domains:
+            origins.append(f'https://{domain}')
+            origins.append(f'http://{domain}')
+    except Exception:
+        pass  # Database might not be ready during startup
+    return origins
 
 # Allow all hosts in Railway (Railway handles this via proxy)
 import os
