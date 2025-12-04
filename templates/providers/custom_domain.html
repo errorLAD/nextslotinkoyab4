@@ -324,13 +324,19 @@
     <div class="mb-4">
         <h4 class="mb-3"><i class="bi bi-table me-2"></i>Your Unique DNS Records</h4>
         
+        <!-- CRITICAL: Cloudflare Warning -->
+        <div class="alert alert-danger mb-3">
+            <h6 class="alert-heading"><i class="bi bi-exclamation-octagon-fill me-2"></i>⚠️ IMPORTANT: Cloudflare Users</h6>
+            <p class="mb-2">Our hosting server uses Cloudflare. If you also use Cloudflare for your domain, you <strong>MUST set Proxy to OFF (DNS Only - Grey Cloud)</strong>.</p>
+            <p class="mb-0"><strong>If you get "Error 1000":</strong> Turn OFF the orange cloud (Proxied) → Make it grey cloud (DNS only).</p>
+        </div>
+        
         <!-- Root Domain Warning -->
         {% if dns_config and dns_config.is_root_domain %}
         <div class="alert alert-warning mb-3">
             <i class="bi bi-exclamation-triangle-fill me-2"></i>
             <strong>Root Domain Detected!</strong> You're setting up a root domain ({{ provider.custom_domain }}). 
-            <br><strong>Important:</strong> You MUST use Cloudflare with the proxy enabled (orange cloud). 
-            Cloudflare will use "CNAME Flattening" to make this work.
+            <br><strong>For Cloudflare users:</strong> Set proxy to <strong>DNS Only (Grey cloud)</strong> to avoid Error 1000.
         </div>
         {% endif %}
         
@@ -381,7 +387,7 @@
                                 <i class="bi bi-clipboard"></i>
                             </button>
                         </td>
-                        <td><span class="cloudflare-badge"><i class="bi bi-cloud-fill"></i> Proxied (Orange)</span></td>
+                        <td><span class="text-secondary"><i class="bi bi-cloud-slash"></i> DNS Only (Grey) ⚠️</span></td>
                     </tr>
                     <tr>
                         <td><span class="badge bg-secondary px-3 py-2 fs-6">TXT</span></td>
@@ -424,7 +430,7 @@
                             <li>Type: Select <code>CNAME</code></li>
                             <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">{% if dns_config %}{{ dns_config.subdomain }}{% else %}{{ provider.custom_domain|get_subdomain }}{% endif %}</code></li>
                             <li>Target: Enter <code class="bg-light px-2 py-1 rounded">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ hosting_domain }}{% endif %}</code></li>
-                            <li>Proxy status: <strong class="text-warning">☁️ Proxied (Orange cloud ON)</strong></li>
+                            <li>Proxy status: <strong class="text-secondary">☁️ DNS Only (Grey cloud OFF)</strong> ⚠️ IMPORTANT!</li>
                             <li>Click <strong>Save</strong></li>
                         </ul>
                     </li>
@@ -439,9 +445,58 @@
                         </ul>
                     </li>
                     <li class="mb-0">
-                        <strong>Configure SSL:</strong> Go to <strong>SSL/TLS</strong> → Set encryption mode to <strong>"Full (Strict)"</strong>
+                        <strong>SSL/TLS Settings:</strong> Go to <strong>SSL/TLS</strong> → Set encryption mode to <strong>"Full"</strong> (not Full Strict since proxy is off)
                     </li>
                 </ol>
+                
+                <div class="alert alert-warning mt-3 mb-0">
+                    <i class="bi bi-lightbulb-fill me-2"></i>
+                    <strong>Why DNS Only?</strong> Our server uses Cloudflare. Double-proxying (your Cloudflare → our Cloudflare) causes Error 1000. DNS Only mode avoids this.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Non-Cloudflare DNS Guide -->
+        <div class="card mt-4 border-0 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Using Other DNS Providers (GoDaddy, Namecheap, Google, etc.)</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success mb-3">
+                    <i class="bi bi-emoji-smile me-2"></i>
+                    <strong>Good news!</strong> If you're NOT using Cloudflare, setup is simpler with no restrictions!
+                </div>
+                
+                <ol class="mb-0">
+                    <li class="mb-3">
+                        <strong>Go to your DNS provider's dashboard</strong> (GoDaddy, Namecheap, Google Domains, etc.)
+                    </li>
+                    <li class="mb-3">
+                        <strong>Add CNAME Record:</strong>
+                        <ul class="mt-2">
+                            <li>Type: <code>CNAME</code></li>
+                            <li>Host/Name: <code class="bg-warning px-2 py-1 rounded">{% if dns_config %}{{ dns_config.subdomain }}{% else %}{{ provider.custom_domain|get_subdomain }}{% endif %}</code> (use <code>@</code> for root domain)</li>
+                            <li>Points to/Value: <code class="bg-success text-white px-2 py-1 rounded">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ hosting_domain }}{% endif %}</code></li>
+                            <li>TTL: Auto or 3600</li>
+                        </ul>
+                    </li>
+                    <li class="mb-3">
+                        <strong>Add TXT Record:</strong>
+                        <ul class="mt-2">
+                            <li>Type: <code>TXT</code></li>
+                            <li>Host/Name: <code class="bg-warning px-2 py-1 rounded">{% if dns_config %}{{ dns_config.txt.name }}{% else %}_booking-verify{% endif %}</code></li>
+                            <li>Value: <code class="bg-light px-2 py-1 rounded" style="word-break: break-all;">{% if dns_config %}{{ dns_config.txt.value }}{% else %}{{ provider.domain_verification_code }}{% endif %}</code></li>
+                        </ul>
+                    </li>
+                    <li class="mb-0">
+                        <strong>Wait for propagation</strong> (usually 5-30 minutes, can take up to 24 hours)
+                    </li>
+                </ol>
+                
+                <div class="alert alert-info mt-3 mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Note for root domains:</strong> Some providers don't support CNAME for root domains (@). In that case, use an <strong>ALIAS</strong> or <strong>ANAME</strong> record if available, or use <code>www</code> subdomain instead.
+                </div>
             </div>
         </div>
     </div>
