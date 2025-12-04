@@ -70,7 +70,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'providers.middleware.DynamicCsrfMiddleware',  # Custom CSRF that allows verified domains
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -286,34 +286,18 @@ GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 
 # CSRF Trusted Origins (Required for Railway and Custom Domains)
+# Base trusted origins - always trusted
 CSRF_TRUSTED_ORIGINS = [
     'https://gastric-gazelle-abhishekmishra-d93b010d.koyeb.app',
     'https://*.railway.app',
     'https://nextslot.in',
     'https://www.nextslot.in',
-    'https://urbanunit.in',
-    'https://www.urbanunit.in',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
 
-# Dynamically add CSRF trusted origins for custom domains
-# Get all verified custom domains from database and add them
-def get_csrf_trusted_origins():
-    """Get CSRF trusted origins including all verified custom domains."""
-    origins = CSRF_TRUSTED_ORIGINS.copy()
-    try:
-        from providers.models import ServiceProvider
-        verified_domains = ServiceProvider.objects.filter(
-            domain_verified=True,
-            custom_domain__isnull=False
-        ).values_list('custom_domain', flat=True)
-        for domain in verified_domains:
-            origins.append(f'https://{domain}')
-            origins.append(f'http://{domain}')
-    except Exception:
-        pass  # Database might not be ready during startup
-    return origins
+# For custom domains, we use a custom CSRF middleware that dynamically checks
+# verified domains from the database. This is handled in providers.middleware
 
 # Allow all hosts in Railway (Railway handles this via proxy)
 import os
