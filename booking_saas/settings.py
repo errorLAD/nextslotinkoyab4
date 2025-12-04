@@ -22,6 +22,10 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1 , gastric-g
 DEFAULT_DOMAIN = config('DEFAULT_DOMAIN', default='yourdomain.com')
 DEFAULT_SCHEME = config('DEFAULT_SCHEME', default='https')
 
+# Hosting server domain (where the app is actually hosted - Koyeb, Railway, etc.)
+# This is used as the CNAME target for custom domains
+HOSTING_DOMAIN = config('HOSTING_DOMAIN', default='gastric-gazelle-abhishekmishra-d93b010d.koyeb.app')
+
 # Cloudflare Configuration (for custom domain SSL & DNS)
 CLOUDFLARE_API_TOKEN = config('CLOUDFLARE_API_TOKEN', default='')
 CLOUDFLARE_ZONE_ID = config('CLOUDFLARE_ZONE_ID', default='')

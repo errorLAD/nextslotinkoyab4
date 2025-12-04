@@ -54,9 +54,9 @@ def get_dns_config_for_provider(provider):
     # Generate unique provider identifier for DNS
     provider_unique_id = generate_provider_unique_id(provider.id)
     
-    # CNAME target - unique per provider using subdomain routing
-    # This allows the server to identify which provider the request is for
-    cname_target = settings.DEFAULT_DOMAIN
+    # CNAME target - should point to the HOSTING server (Koyeb, Railway, etc.)
+    # NOT the DEFAULT_DOMAIN (which is the branded domain)
+    cname_target = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
     
     # TXT verification record - unique per provider
     txt_record_name = f"_booking-verify"
@@ -263,18 +263,21 @@ def verify_domain_ownership(provider):
     if not provider.custom_domain or not provider.domain_verification_code:
         return False, 'No domain or verification code found.'
     
+    # Use HOSTING_DOMAIN as the expected CNAME target
+    expected_cname = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
+    
     # For subdomains, we only need to verify CNAME
     if provider.custom_domain_type == 'subdomain':
         result = verify_domain_dns(
             domain=provider.custom_domain,
-            expected_cname=settings.DEFAULT_DOMAIN,
+            expected_cname=expected_cname,
             expected_txt=provider.domain_verification_code
         )
     else:
         # For full domains, we need both CNAME and TXT verification
         result = verify_domain_dns(
             domain=provider.custom_domain,
-            expected_cname=settings.DEFAULT_DOMAIN,
+            expected_cname=expected_cname,
             expected_txt=provider.domain_verification_code
         )
     
