@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-3">Delete Service</h1>
+
+    {% comment %}Make template tolerant of either `service` (custom context) or default `object` from DeleteView{% endcomment %}
+    {% with svc=service|default:object %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <p>Are you sure you want to delete the service "<strong>{{ svc.service_name }}</strong>"?</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, delete</button>
+                <a href="{% url 'providers:service_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+    {% endwith %}
+</div>
+{% endblock %}

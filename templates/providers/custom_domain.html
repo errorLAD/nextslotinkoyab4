@@ -1,0 +1,598 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load provider_tags %}
+
+{% block title %}Custom Domain Settings - {{ provider.business_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .domain-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        color: white;
+        margin-bottom: 2rem;
+    }
+    
+    .domain-hero h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .step-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .step-number {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .domain-input-section {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .domain-input-group {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .domain-input-group input {
+        border: none;
+        background: transparent;
+        font-size: 1.25rem;
+        padding: 1rem;
+        flex: 1;
+    }
+    
+    .domain-input-group input:focus {
+        outline: none;
+    }
+    
+    .domain-input-group .btn {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+    
+    .dns-table {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .dns-table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .dns-table th {
+        padding: 1.25rem;
+        font-weight: 600;
+    }
+    
+    .dns-table td {
+        padding: 1.25rem;
+        vertical-align: middle;
+    }
+    
+    .dns-table tbody tr {
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .dns-table tbody tr:last-child {
+        border-bottom: none;
+    }
+    
+    .status-badge {
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .status-pending {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        color: #8b4513;
+    }
+    
+    .status-verified {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #155724;
+    }
+    
+    .status-not-configured {
+        background: #e9ecef;
+        color: #6c757d;
+    }
+    
+    .info-card {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border-left: 4px solid #0284c7;
+    }
+    
+    .warning-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        border-left: 4px solid #d97706;
+    }
+    
+    .success-card {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+    }
+    
+    .copy-btn {
+        background: #e9ecef;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .copy-btn:hover {
+        background: #dee2e6;
+    }
+    
+    .copy-btn.copied {
+        background: #d1fae5;
+        color: #059669;
+    }
+    
+    .cloudflare-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #f48120;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+        .domain-hero {
+            padding: 2rem 1.5rem;
+        }
+        
+        .domain-hero h1 {
+            font-size: 1.75rem;
+        }
+        
+        .domain-input-section {
+            padding: 1.5rem;
+        }
+        
+        .domain-input-group {
+            flex-direction: column;
+        }
+        
+        .domain-input-group input {
+            width: 100%;
+        }
+        
+        .domain-input-group .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Back Button -->
+    <a href="{% url 'providers:dashboard' %}" class="btn btn-outline-secondary mb-4">
+        <i class="bi bi-arrow-left me-2"></i> Back to Dashboard
+    </a>
+    
+    <!-- Hero Section -->
+    <div class="domain-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1><i class="bi bi-globe2 me-3"></i>Custom Domain</h1>
+                <p class="lead mb-3 opacity-90">
+                    Connect your own domain for a professional branded booking experience. 
+                    SSL certificates are provided free via Cloudflare.
+                </p>
+                {% if not provider.has_pro_features %}
+                <div class="alert alert-warning d-inline-block mb-0 py-2 px-3" style="background: rgba(255,255,255,0.9);">
+                    <i class="bi bi-lock-fill me-2"></i> 
+                    <strong>PRO Feature:</strong> 
+                    <a href="{% url 'subscriptions:upgrade_to_pro' %}" class="text-decoration-underline">Upgrade to PRO</a> to use custom domains.
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                {% if provider.domain_verified %}
+                    <span class="status-badge status-verified">
+                        <i class="bi bi-check-circle-fill"></i> Verified
+                    </span>
+                {% elif provider.custom_domain %}
+                    <span class="status-badge status-pending">
+                        <i class="bi bi-clock-fill"></i> Pending Verification
+                    </span>
+                {% else %}
+                    <span class="status-badge status-not-configured">
+                        <i class="bi bi-gear-fill"></i> Not Configured
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'danger' %}exclamation-triangle{% else %}info-circle{% endif %}-fill me-2"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if provider.domain_verified %}
+    <!-- Domain Verified State -->
+    <div class="success-card mb-4">
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+        <h2 class="mt-3 mb-2">Your Domain is Active!</h2>
+        <p class="text-muted mb-4">Your booking page is now accessible at:</p>
+        <a href="https://{{ provider.custom_domain }}" target="_blank" class="btn btn-lg btn-primary mb-4">
+            <i class="bi bi-box-arrow-up-right me-2"></i> https://{{ provider.custom_domain }}
+        </a>
+        <hr class="my-4">
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#removeDomainModal">
+            <i class="bi bi-trash me-2"></i> Remove Domain
+        </button>
+    </div>
+    
+    {% elif provider.custom_domain %}
+    <!-- Pending Verification State -->
+    <div class="domain-input-section">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <div>
+                <h4 class="mb-1">Current Domain</h4>
+                <p class="text-muted mb-0">Configure DNS to complete setup</p>
+            </div>
+            <code class="bg-light px-4 py-2 rounded-pill fs-5">{{ provider.custom_domain }}</code>
+        </div>
+        
+        <div class="warning-card mb-4">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-4 me-3"></i>
+                <div>
+                    <h6 class="mb-1">Waiting for DNS Configuration</h6>
+                    <p class="mb-0">Add the DNS records below in your Cloudflare dashboard, then click "Verify Domain".</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- DNS Records Table -->
+    <div class="mb-4">
+        <h4 class="mb-3"><i class="bi bi-table me-2"></i>Required DNS Records</h4>
+        
+        <!-- Important Note -->
+        <div class="alert alert-info mb-3">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong>Important:</strong> In Cloudflare, the "Name" field should be just the subdomain part (e.g., <code>book</code>), 
+            not the full domain. Cloudflare automatically appends your domain.
+        </div>
+        
+        <div class="table-responsive dns-table">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Name (Enter in Cloudflare)</th>
+                        <th>Content / Target</th>
+                        <th>Proxy Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge bg-primary px-3 py-2 fs-6">CNAME</span></td>
+                        <td>
+                            <code class="bg-warning text-dark p-2 rounded fs-5" id="cname-name">{{ provider.custom_domain|get_subdomain }}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{{ provider.custom_domain|get_subdomain }}', this)">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                            <br>
+                            <small class="text-muted mt-1 d-block">
+                                {% if provider.custom_domain|get_subdomain == '@' %}
+                                    Use <strong>@</strong> for root domain
+                                {% else %}
+                                    Enter exactly: <strong>{{ provider.custom_domain|get_subdomain }}</strong>
+                                {% endif %}
+                            </small>
+                        </td>
+                        <td>
+                            <code class="bg-success text-white p-2 rounded fs-5" id="cname-target">{{ default_domain }}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{{ default_domain }}', this)">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </td>
+                        <td><span class="cloudflare-badge"><i class="bi bi-cloud-fill"></i> Proxied (Orange)</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge bg-secondary px-3 py-2 fs-6">TXT</span></td>
+                        <td>
+                            <code class="bg-warning text-dark p-2 rounded fs-5">_booking-verify</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('_booking-verify', this)">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                            <br>
+                            <small class="text-muted mt-1 d-block">Enter exactly: <strong>_booking-verify</strong></small>
+                        </td>
+                        <td>
+                            <code class="bg-light p-2 rounded text-break" id="txt-value" style="max-width: 250px; display: inline-block; font-size: 0.8rem;">{{ provider.domain_verification_code }}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{{ provider.domain_verification_code }}', this)">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </td>
+                        <td><span class="text-muted"><i class="bi bi-cloud-slash"></i> DNS Only (Grey)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Step by Step Guide -->
+        <div class="card mt-4 border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-list-ol me-2"></i>Step-by-Step Cloudflare Setup</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li class="mb-3">
+                        <strong>Go to Cloudflare Dashboard</strong> → Select your domain → Click <strong>DNS</strong> in the sidebar
+                    </li>
+                    <li class="mb-3">
+                        <strong>Add CNAME Record:</strong>
+                        <ul class="mt-2">
+                            <li>Click <strong>"Add record"</strong></li>
+                            <li>Type: Select <code>CNAME</code></li>
+                            <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">{{ provider.custom_domain|get_subdomain }}</code></li>
+                            <li>Target: Enter <code class="bg-light px-2 py-1 rounded">{{ default_domain }}</code></li>
+                            <li>Proxy status: <strong class="text-warning">☁️ Proxied (Orange cloud ON)</strong></li>
+                            <li>Click <strong>Save</strong></li>
+                        </ul>
+                    </li>
+                    <li class="mb-3">
+                        <strong>Add TXT Record:</strong>
+                        <ul class="mt-2">
+                            <li>Click <strong>"Add record"</strong></li>
+                            <li>Type: Select <code>TXT</code></li>
+                            <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">_booking-verify</code></li>
+                            <li>Content: Paste <code class="bg-light px-2 py-1 rounded" style="word-break: break-all;">{{ provider.domain_verification_code }}</code></li>
+                            <li>Click <strong>Save</strong></li>
+                        </ul>
+                    </li>
+                    <li class="mb-0">
+                        <strong>Configure SSL:</strong> Go to <strong>SSL/TLS</strong> → Set encryption mode to <strong>"Full (Strict)"</strong>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="info-card h-100">
+                <h6 class="mb-2"><i class="bi bi-shield-check me-2"></i>SSL Configuration</h6>
+                <p class="mb-0">In Cloudflare SSL/TLS settings, set encryption mode to <strong>"Full (Strict)"</strong> for maximum security.</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="warning-card h-100">
+                <h6 class="mb-2"><i class="bi bi-clock-history me-2"></i>Propagation Time</h6>
+                <p class="mb-0">DNS changes may take <strong>5 minutes to 24 hours</strong> to propagate worldwide.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="d-flex gap-3 flex-wrap">
+        <form method="post" action="{% url 'providers:verify_domain' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-lg px-5">
+                <i class="bi bi-arrow-repeat me-2"></i> Verify Domain
+            </button>
+        </form>
+        <a href="https://dash.cloudflare.com" target="_blank" class="btn btn-dark btn-lg">
+            <i class="bi bi-box-arrow-up-right me-2"></i> Open Cloudflare Dashboard
+        </a>
+        <button type="button" class="btn btn-outline-danger btn-lg" data-bs-toggle="modal" data-bs-target="#removeDomainModal">
+            <i class="bi bi-x-lg me-2"></i> Cancel Setup
+        </button>
+    </div>
+    
+    {% else %}
+    <!-- No Domain - Setup Form -->
+    <div class="domain-input-section">
+        <h4 class="mb-2">Enter Your Domain</h4>
+        <p class="text-muted mb-4">Enter the domain or subdomain you want to connect to your booking page.</p>
+        
+        <form method="post" action="{% url 'providers:add_custom_domain' %}">
+            {% csrf_token %}
+            <input type="hidden" name="domain_type" value="domain">
+            <div class="domain-input-group mb-3">
+                <i class="bi bi-globe2 text-primary fs-4 ms-3"></i>
+                <input type="text" 
+                       name="domain" 
+                       placeholder="book.yourdomain.com" 
+                       pattern="[a-zA-Z0-9.-]+"
+                       required>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-2"></i> Add Domain
+                </button>
+            </div>
+            <p class="text-muted small">
+                <i class="bi bi-info-circle me-1"></i> 
+                Examples: <code>book.yourbusiness.com</code>, <code>appointments.yourdomain.com</code>, <code>yourbrand.com</code>
+            </p>
+        </form>
+    </div>
+    
+    <!-- How It Works -->
+    <h4 class="mb-4"><i class="bi bi-lightning-charge-fill me-2 text-primary"></i>How It Works</h4>
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h5>Enter Domain</h5>
+                <p class="text-muted mb-0">Type your custom domain or subdomain in the field above.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h5>Add DNS Records</h5>
+                <p class="text-muted mb-0">Configure CNAME and TXT records in your Cloudflare dashboard.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h5>Enable Proxy</h5>
+                <p class="text-muted mb-0">Turn on Cloudflare proxy for free SSL and DDoS protection.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <h5>Go Live!</h5>
+                <p class="text-muted mb-0">Your booking page is now live on your custom domain.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Benefits -->
+    <div class="info-card">
+        <h5 class="mb-3"><i class="bi bi-stars me-2"></i>Benefits of Custom Domain</h5>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span>Professional branding</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span>Free SSL certificate</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span>DDoS protection</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span>Better SEO</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span>Customer trust</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center mb-2">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <span>Easy to remember</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Remove Domain Modal -->
+{% if provider.custom_domain %}
+<div class="modal fade" id="removeDomainModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle text-danger me-2"></i>Remove Domain
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove <strong>{{ provider.custom_domain }}</strong>?</p>
+                <p class="text-muted small mb-0">Your booking page will still be accessible via the default URL.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'providers:remove_domain' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>Remove Domain
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text).then(function() {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="bi bi-check-lg"></i> Copied!';
+        button.classList.add('copied');
+        setTimeout(function() {
+            button.innerHTML = originalHTML;
+            button.classList.remove('copied');
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

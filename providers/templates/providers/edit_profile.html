@@ -1,0 +1,1008 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile - {{ provider.business_name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8 px-4">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Edit Provider Profile</h1>
+        <p class="text-gray-600 mt-2">Manage your business information, team, and more.</p>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+                <div class="p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Tab Navigation -->
+    <div class="mb-6 border-b border-gray-200">
+        <div class="flex flex-wrap gap-2 lg:gap-0" role="tablist">
+            <button class="tab-button active px-4 py-3 font-medium text-sm border-b-2 border-blue-500 text-blue-600 hover:text-blue-700" 
+                    onclick="switchTab(event, 'basic')" role="tab" aria-selected="true">
+                📋 Basic Info
+            </button>
+            <button class="tab-button px-4 py-3 font-medium text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300" 
+                    onclick="switchTab(event, 'images')" role="tab" aria-selected="false">
+                🖼️ Images
+            </button>
+            <button class="tab-button px-4 py-3 font-medium text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300" 
+                    onclick="switchTab(event, 'about')" role="tab" aria-selected="false">
+                ℹ️ About
+            </button>
+            <button class="tab-button px-4 py-3 font-medium text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300" 
+                    onclick="switchTab(event, 'team')" role="tab" aria-selected="false">
+                👥 Team
+            </button>
+            <button class="tab-button px-4 py-3 font-medium text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300" 
+                    onclick="switchTab(event, 'testimonials')" role="tab" aria-selected="false">
+                ⭐ Testimonials
+            </button>
+            <button class="tab-button px-4 py-3 font-medium text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300" 
+                    onclick="switchTab(event, 'social')" role="tab" aria-selected="false">
+                🔗 Social & Legal
+            </button>
+        </div>
+    </div>
+
+    <!-- Form with enctype for file uploads -->
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- Basic Info Tab -->
+        <div id="basic" class="tab-content block space-y-4">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Basic Business Information</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Business Name -->
+                <div>
+                    {{ form.business_name.label_tag }}
+                    {{ form.business_name }}
+                    {% if form.business_name.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.business_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Business Type -->
+                <div>
+                    {{ form.business_type.label_tag }}
+                    {{ form.business_type }}
+                    {% if form.business_type.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.business_type.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    {{ form.phone.label_tag }}
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.phone.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- WhatsApp Number -->
+                <div>
+                    {{ form.whatsapp_number.label_tag }}
+                    {{ form.whatsapp_number }}
+                    {% if form.whatsapp_number.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.whatsapp_number.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div>
+                {{ form.business_address.label_tag }}
+                {{ form.business_address }}
+                {% if form.business_address.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.business_address.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- City -->
+                <div>
+                    {{ form.city.label_tag }}
+                    {{ form.city }}
+                    {% if form.city.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.city.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- State -->
+                <div>
+                    {{ form.state.label_tag }}
+                    {{ form.state }}
+                    {% if form.state.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.state.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Pincode -->
+                <div>
+                    {{ form.pincode.label_tag }}
+                    {{ form.pincode }}
+                    {% if form.pincode.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.pincode.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                {{ form.description.label_tag }}
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.description.errors }}</div>
+                {% endif %}
+                <p class="text-gray-600 text-sm mt-1">Brief description of your business (max 500 characters)</p>
+            </div>
+        </div>
+
+        <!-- Images Tab -->
+        <div id="images" class="tab-content hidden space-y-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Business Images</h2>
+            
+            <!-- Logo & Profile Image -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Business Logo -->
+                <div class="border border-gray-300 rounded-lg p-4 bg-white shadow-sm">
+                    <h3 class="font-semibold text-lg mb-3">📷 Business Logo</h3>
+                    {% if provider.logo %}
+                        <div class="mb-3">
+                            <p class="text-sm text-gray-600 mb-2">Current Logo:</p>
+                            <img src="{{ provider.logo.url }}" alt="Current Logo" class="h-24 w-24 object-cover rounded-lg border border-gray-200">
+                        </div>
+                    {% endif %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload New Logo</label>
+                        {{ form.logo }}
+                        {% if form.logo.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.logo.errors }}</div>
+                        {% endif %}
+                        <p class="text-gray-500 text-xs mt-1">Recommended: Square image, 200x200px or larger</p>
+                    </div>
+                </div>
+
+                <!-- Profile Image -->
+                <div class="border border-gray-300 rounded-lg p-4 bg-white shadow-sm">
+                    <h3 class="font-semibold text-lg mb-3">🖼️ Profile Image</h3>
+                    {% if provider.profile_image %}
+                        <div class="mb-3">
+                            <p class="text-sm text-gray-600 mb-2">Current Profile Image:</p>
+                            <img src="{{ provider.profile_image.url }}" alt="Current Profile" class="h-24 w-32 object-cover rounded-lg border border-gray-200">
+                        </div>
+                    {% endif %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Upload New Profile Image</label>
+                        {{ form.profile_image }}
+                        {% if form.profile_image.errors %}
+                            <div class="text-red-600 text-sm mt-1">{{ form.profile_image.errors }}</div>
+                        {% endif %}
+                        <p class="text-gray-500 text-xs mt-1">Recommended: 800x600px or larger</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Color Section -->
+            <div class="border border-gray-300 rounded-lg p-4 bg-white shadow-sm">
+                <h3 class="font-semibold text-lg mb-3">🎨 Hero Section Color</h3>
+                <p class="text-gray-600 mb-4">Choose a background color for your booking page hero section</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <!-- Color Picker -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pick a Color</label>
+                            <div class="flex items-center gap-3">
+                                <input type="color" name="hero_color" id="id_hero_color" 
+                                       value="{{ provider.hero_color|default:'#7c3aed' }}" 
+                                       class="w-16 h-12 rounded cursor-pointer border border-gray-300">
+                                <input type="text" id="hex-input" 
+                                       value="{{ provider.hero_color|default:'#7c3aed' }}" 
+                                       placeholder="#7c3aed"
+                                       class="w-28 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            </div>
+                            {% if form.hero_color.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ form.hero_color.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Preset Colors -->
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-2">Professional</p>
+                                <div class="flex gap-2">
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #7c3aed;" data-color="#7c3aed" title="Purple (Default)"></button>
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #4F46E5;" data-color="#4F46E5" title="Indigo"></button>
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #3B82F6;" data-color="#3B82F6" title="Blue"></button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-xs text-gray-500 mb-2">Modern</p>
+                                <div class="flex gap-2">
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #10B981;" data-color="#10B981" title="Emerald"></button>
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #F59E0B;" data-color="#F59E0B" title="Amber"></button>
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #EF4444;" data-color="#EF4444" title="Red"></button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <p class="text-xs text-gray-500 mb-2">Luxury</p>
+                                <div class="flex gap-2">
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #9333EA;" data-color="#9333EA" title="Violet"></button>
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #0891B2;" data-color="#0891B2" title="Cyan"></button>
+                                    <button type="button" class="color-preset w-10 h-10 rounded-lg border-2 border-transparent hover:scale-110 transition" style="background: #BE185D;" data-color="#BE185D" title="Pink"></button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" id="reset-color" class="mt-4 px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+                            🔄 Reset to Default
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <!-- Live Preview -->
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Live Preview</label>
+                        <div class="hero-preview rounded-xl p-6 text-center transition-all" id="hero-preview" style="background: {{ provider.hero_color|default:'#7c3aed' }}; min-height: 180px;">
+                            <h4 class="text-xl font-bold mb-2" id="preview-title" style="color: white;">{{ provider.business_name|default:'Your Business' }}</h4>
+                            <p class="text-sm mb-4 opacity-90" id="preview-tagline" style="color: white;">Professional services tailored for you</p>
+                            <span class="inline-block px-5 py-2 rounded-full font-semibold text-sm" id="preview-btn" style="background: white; color: #7c3aed;">Book Appointment</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Images Section -->
+            <div class="border border-gray-300 rounded-lg p-4 bg-white shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <h3 class="font-semibold text-lg">🏞️ Hero/Banner Images</h3>
+                        <p class="text-gray-600 mt-1">Add banner images for your booking page (max 3 recommended)</p>
+                    </div>
+                    <button type="button" id="add-hero-image-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
+                        <span class="text-lg">+</span> Add Image
+                    </button>
+                </div>
+                
+                <div id="hero-image-formset" class="space-y-4">
+                    {{ hero_image_formset.management_form }}
+                    
+                    {% for hero_form in hero_image_formset.forms %}
+                        <div class="hero-form border border-gray-200 rounded-lg p-4 bg-gray-50" id="hero-form-{{ forloop.counter0 }}">
+                            {{ hero_form.id }}
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-medium">Hero Image {{ forloop.counter }}</h4>
+                                {% if hero_form.DELETE %}
+                                    <label class="flex items-center gap-2 text-red-600 cursor-pointer text-sm">
+                                        {{ hero_form.DELETE }}
+                                        <span>Remove</span>
+                                    </label>
+                                {% endif %}
+                            </div>
+                            
+                            {% if hero_form.instance.image %}
+                                <div class="mb-3">
+                                    <p class="text-sm text-gray-600 mb-2">Current Image:</p>
+                                    <img src="{{ hero_form.instance.image.url }}" alt="Hero Image" class="h-20 w-40 object-cover rounded-lg border border-gray-200">
+                                </div>
+                            {% endif %}
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                                    {{ hero_form.image }}
+                                    {% if hero_form.image.errors %}
+                                        <div class="text-red-600 text-sm mt-1">{{ hero_form.image.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Caption</label>
+                                    {{ hero_form.caption }}
+                                    {% if hero_form.caption.errors %}
+                                        <div class="text-red-600 text-sm mt-1">{{ hero_form.caption.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                                    {{ hero_form.display_order }}
+                                </div>
+                                <div class="flex items-center gap-2 mt-6">
+                                    {{ hero_form.is_active }}
+                                    <label for="{{ hero_form.is_active.id_for_label }}" class="text-sm">Active</label>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-gray-500 italic">No hero images added yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="about" class="tab-content hidden space-y-4">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">About Your Business</h2>
+            
+            <!-- Mission Statement -->
+            <div>
+                {{ form.mission_statement.label_tag }}
+                {{ form.mission_statement }}
+                {% if form.mission_statement.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.mission_statement.errors }}</div>
+                {% endif %}
+                <p class="text-gray-600 text-sm mt-1">What does your business aim to achieve?</p>
+            </div>
+
+            <!-- Vision Statement -->
+            <div>
+                {{ form.vision_statement.label_tag }}
+                {{ form.vision_statement }}
+                {% if form.vision_statement.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.vision_statement.errors }}</div>
+                {% endif %}
+                <p class="text-gray-600 text-sm mt-1">Your long-term vision for the business</p>
+            </div>
+
+            <!-- About Us -->
+            <div>
+                {{ form.about_us.label_tag }}
+                {{ form.about_us }}
+                {% if form.about_us.errors %}
+                    <div class="text-red-600 text-sm mt-1">{{ form.about_us.errors }}</div>
+                {% endif %}
+                <p class="text-gray-600 text-sm mt-1">Detailed information about your business, history, expertise, etc.</p>
+            </div>
+        </div>
+
+        <!-- Team Members Tab -->
+        <div id="team" class="tab-content hidden space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Team Members</h2>
+                    <p class="text-gray-600 mt-1">Add your team members to showcase your expertise and build trust with clients.</p>
+                </div>
+                <button type="button" id="add-team-member-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2">
+                    <span class="text-lg">+</span> Add Team Member
+                </button>
+            </div>
+
+            <div id="team-formset" class="space-y-4">
+                {{ team_member_formset.management_form }}
+                
+                {% for team_form in team_member_formset.forms %}
+                    <div class="team-form border border-gray-300 rounded-lg p-4 bg-white shadow-sm" id="team-form-{{ forloop.counter0 }}">
+                        {{ team_form.id }}
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg">Team Member {{ forloop.counter }}</h3>
+                            {% if team_form.DELETE %}
+                                <label class="flex items-center gap-2 text-red-600 cursor-pointer">
+                                    {{ team_form.DELETE }}
+                                    <span>Delete</span>
+                                </label>
+                            {% endif %}
+                        </div>
+
+                        <!-- Team Member Photo -->
+                        <div class="mb-4 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                            <h4 class="font-medium text-sm mb-2">📷 Photo</h4>
+                            {% if team_form.instance.photo %}
+                                <div class="mb-2">
+                                    <img src="{{ team_form.instance.photo.url }}" alt="{{ team_form.instance.name }}" class="h-16 w-16 object-cover rounded-full border border-gray-200">
+                                </div>
+                            {% endif %}
+                            <div>
+                                {{ team_form.photo }}
+                                {% if team_form.photo.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ team_form.photo.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Name -->
+                            <div>
+                                {{ team_form.name.label_tag }}
+                                {{ team_form.name }}
+                                {% if team_form.name.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ team_form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Role Title -->
+                            <div>
+                                {{ team_form.role_title.label_tag }}
+                                {{ team_form.role_title }}
+                                {% if team_form.role_title.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ team_form.role_title.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="mt-4">
+                            {{ team_form.bio.label_tag }}
+                            {{ team_form.bio }}
+                            {% if team_form.bio.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ team_form.bio.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Specialties -->
+                        <div class="mt-4">
+                            {{ team_form.specialties.label_tag }}
+                            {{ team_form.specialties }}
+                            {% if team_form.specialties.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ team_form.specialties.errors }}</div>
+                            {% endif %}
+                            <p class="text-gray-600 text-sm mt-1">Comma-separated list of specialties</p>
+                        </div>
+
+                        <!-- Credentials -->
+                        <div class="mt-4">
+                            {{ team_form.credentials.label_tag }}
+                            {{ team_form.credentials }}
+                            {% if team_form.credentials.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ team_form.credentials.errors }}</div>
+                            {% endif %}
+                            <p class="text-gray-600 text-sm mt-1">Certifications, degrees, licenses, etc.</p>
+                        </div>
+
+                        <!-- Display Order & Is Active -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                {{ team_form.display_order.label_tag }}
+                                {{ team_form.display_order }}
+                                {% if team_form.display_order.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ team_form.display_order.errors }}</div>
+                                {% endif %}
+                            </div>
+                            {% if team_form.is_active %}
+                                <div class="flex items-center gap-2 mt-6">
+                                    {{ team_form.is_active }}
+                                    <label for="{{ team_form.is_active.id_for_label }}">Active</label>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-8 text-gray-500">
+                        <p class="text-lg">No team members added yet.</p>
+                        <p class="text-sm mt-2">Team members can be added through the admin panel.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Testimonials Tab -->
+        <div id="testimonials" class="tab-content hidden space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Client Testimonials</h2>
+                    <p class="text-gray-600 mt-1">Showcase positive feedback from satisfied clients to build credibility.</p>
+                </div>
+                <button type="button" id="add-testimonial-btn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center gap-2">
+                    <span class="text-lg">+</span> Add Testimonial
+                </button>
+            </div>
+
+            <div id="testimonial-formset" class="space-y-4">
+                {{ testimonial_formset.management_form }}
+                
+                {% for testimonial_form in testimonial_formset.forms %}
+                    <div class="testimonial-form border border-gray-300 rounded-lg p-4 bg-white shadow-sm" id="testimonial-form-{{ forloop.counter0 }}">
+                        {{ testimonial_form.id }}
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-lg">Testimonial {{ forloop.counter }}</h3>
+                            {% if testimonial_form.DELETE %}
+                                <label class="flex items-center gap-2 text-red-600 cursor-pointer">
+                                    {{ testimonial_form.DELETE }}
+                                    <span>Delete</span>
+                                </label>
+                            {% endif %}
+                        </div>
+
+                        <!-- Client Photo -->
+                        <div class="mb-4 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                            <h4 class="font-medium text-sm mb-2">📷 Client Photo</h4>
+                            {% if testimonial_form.instance.client_photo %}
+                                <div class="mb-2">
+                                    <img src="{{ testimonial_form.instance.client_photo.url }}" alt="{{ testimonial_form.instance.client_name }}" class="h-16 w-16 object-cover rounded-full border border-gray-200">
+                                </div>
+                            {% endif %}
+                            <div>
+                                {{ testimonial_form.client_photo }}
+                                {% if testimonial_form.client_photo.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ testimonial_form.client_photo.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Client Name -->
+                            <div>
+                                {{ testimonial_form.client_name.label_tag }}
+                                {{ testimonial_form.client_name }}
+                                {% if testimonial_form.client_name.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ testimonial_form.client_name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Rating -->
+                            <div>
+                                {{ testimonial_form.rating.label_tag }}
+                                {{ testimonial_form.rating }}
+                                {% if testimonial_form.rating.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ testimonial_form.rating.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Testimonial Text -->
+                        <div class="mt-4">
+                            {{ testimonial_form.testimonial_text.label_tag }}
+                            {{ testimonial_form.testimonial_text }}
+                            {% if testimonial_form.testimonial_text.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ testimonial_form.testimonial_text.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Is Featured & Is Active -->
+                        <div class="flex gap-6 mt-4">
+                            {% if testimonial_form.is_featured %}
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    {{ testimonial_form.is_featured }}
+                                    <span>Featured testimonial</span>
+                                </label>
+                            {% endif %}
+                            {% if testimonial_form.is_active %}
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    {{ testimonial_form.is_active }}
+                                    <span>Active</span>
+                                </label>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-8 text-gray-500">
+                        <p class="text-lg">No testimonials added yet.</p>
+                        <p class="text-sm mt-2">Testimonials can be added through the admin panel.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Social & Legal Tab -->
+        <div id="social" class="tab-content hidden space-y-4">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Social Media & Legal Links</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Instagram -->
+                <div>
+                    {{ form.instagram_url.label_tag }}
+                    {{ form.instagram_url }}
+                    {% if form.instagram_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.instagram_url.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Facebook -->
+                <div>
+                    {{ form.facebook_url.label_tag }}
+                    {{ form.facebook_url }}
+                    {% if form.facebook_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.facebook_url.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Twitter -->
+                <div>
+                    {{ form.twitter_url.label_tag }}
+                    {{ form.twitter_url }}
+                    {% if form.twitter_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.twitter_url.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- LinkedIn -->
+                <div>
+                    {{ form.linkedin_url.label_tag }}
+                    {{ form.linkedin_url }}
+                    {% if form.linkedin_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.linkedin_url.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- YouTube -->
+                <div>
+                    {{ form.youtube_url.label_tag }}
+                    {{ form.youtube_url }}
+                    {% if form.youtube_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.youtube_url.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Legal Links Section -->
+            <hr class="my-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Legal Policy Links</h3>
+
+            <div class="grid grid-cols-1 gap-4">
+                <!-- Terms & Conditions -->
+                <div>
+                    {{ form.terms_conditions_url.label_tag }}
+                    {{ form.terms_conditions_url }}
+                    {% if form.terms_conditions_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.terms_conditions_url.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Privacy Policy -->
+                <div>
+                    {{ form.privacy_policy_url.label_tag }}
+                    {{ form.privacy_policy_url }}
+                    {% if form.privacy_policy_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.privacy_policy_url.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Cancellation Policy -->
+                <div>
+                    {{ form.cancellation_policy_url.label_tag }}
+                    {{ form.cancellation_policy_url }}
+                    {% if form.cancellation_policy_url.errors %}
+                        <div class="text-red-600 text-sm mt-1">{{ form.cancellation_policy_url.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="flex gap-4 mt-8 pt-6 border-t border-gray-200">
+            <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                💾 Save Changes
+            </button>
+            <a href="{% url 'providers:dashboard' %}" class="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Form field styling for Tailwind + Bootstrap compatibility */
+    input[type="text"],
+    input[type="email"],
+    input[type="phone"],
+    input[type="url"],
+    input[type="number"],
+    textarea,
+    select {
+        @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    }
+
+    textarea {
+        @apply resize-vertical min-h-24;
+    }
+
+    input[type="checkbox"] {
+        @apply w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500;
+    }
+
+    label {
+        @apply block text-sm font-medium text-gray-700 mb-2;
+    }
+</style>
+
+<script>
+    function switchTab(event, tabName) {
+        event.preventDefault();
+        
+        // Hide all tab contents
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.classList.add('hidden'));
+        
+        // Remove active class from all buttons
+        const buttons = document.querySelectorAll('.tab-button');
+        buttons.forEach(button => {
+            button.classList.remove('border-blue-500', 'text-blue-600');
+            button.classList.add('border-transparent', 'text-gray-600');
+        });
+        
+        // Show selected tab content
+        document.getElementById(tabName).classList.remove('hidden');
+        
+        // Add active class to clicked button
+        event.target.classList.add('border-blue-500', 'text-blue-600');
+        event.target.classList.remove('border-transparent', 'text-gray-600');
+        event.target.setAttribute('aria-selected', 'true');
+    }
+    
+    // Hero Color Picker functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const colorPicker = document.getElementById('id_hero_color');
+        const hexInput = document.getElementById('hex-input');
+        const heroPreview = document.getElementById('hero-preview');
+        const previewTitle = document.getElementById('preview-title');
+        const previewTagline = document.getElementById('preview-tagline');
+        const previewBtn = document.getElementById('preview-btn');
+        const presets = document.querySelectorAll('.color-preset');
+        const resetBtn = document.getElementById('reset-color');
+        const defaultColor = '#7c3aed';
+        
+        // Calculate brightness to determine text color
+        function getContrastColor(hexColor) {
+            const hex = hexColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128 ? '#1f2937' : '#ffffff';
+        }
+        
+        // Update preview with new color
+        function updatePreview(color) {
+            if (!heroPreview) return;
+            
+            heroPreview.style.background = color;
+            const textColor = getContrastColor(color);
+            if (previewTitle) previewTitle.style.color = textColor;
+            if (previewTagline) previewTagline.style.color = textColor;
+            
+            // Update button colors
+            if (previewBtn) {
+                if (textColor === '#ffffff') {
+                    previewBtn.style.background = 'rgba(255,255,255,0.95)';
+                    previewBtn.style.color = color;
+                } else {
+                    previewBtn.style.background = color;
+                    previewBtn.style.color = '#ffffff';
+                }
+            }
+            
+            // Update active preset
+            presets.forEach(p => {
+                if (p.dataset.color.toLowerCase() === color.toLowerCase()) {
+                    p.classList.add('border-gray-800');
+                    p.style.boxShadow = '0 0 0 2px white, 0 0 0 4px #1f2937';
+                } else {
+                    p.classList.remove('border-gray-800');
+                    p.style.boxShadow = 'none';
+                }
+            });
+        }
+        
+        // Color picker change
+        if (colorPicker) {
+            colorPicker.addEventListener('input', function() {
+                if (hexInput) hexInput.value = this.value;
+                updatePreview(this.value);
+            });
+        }
+        
+        // Hex input change
+        if (hexInput) {
+            hexInput.addEventListener('input', function() {
+                let value = this.value;
+                if (!value.startsWith('#')) {
+                    value = '#' + value;
+                }
+                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                    if (colorPicker) colorPicker.value = value;
+                    updatePreview(value);
+                }
+            });
+        }
+        
+        // Preset click
+        presets.forEach(preset => {
+            preset.addEventListener('click', function(e) {
+                e.preventDefault();
+                const color = this.dataset.color;
+                if (colorPicker) colorPicker.value = color;
+                if (hexInput) hexInput.value = color;
+                updatePreview(color);
+            });
+        });
+        
+        // Reset to default
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (colorPicker) colorPicker.value = defaultColor;
+                if (hexInput) hexInput.value = defaultColor;
+                updatePreview(defaultColor);
+            });
+        }
+        
+        // Initialize preview with current color
+        const initialColor = colorPicker ? colorPicker.value : defaultColor;
+        updatePreview(initialColor);
+        
+        // Dynamic formset management
+        
+        // Add Hero Image
+        const addHeroBtn = document.getElementById('add-hero-image-btn');
+        if (addHeroBtn) {
+            addHeroBtn.addEventListener('click', function() {
+                const formset = document.getElementById('hero-image-formset');
+                const totalForms = document.getElementById('id_hero_images-TOTAL_FORMS');
+                const formCount = parseInt(totalForms.value);
+                
+                const newForm = document.createElement('div');
+                newForm.className = 'hero-form border border-gray-200 rounded-lg p-4 bg-gray-50';
+                newForm.id = 'hero-form-' + formCount;
+                newForm.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-medium">Hero Image ${formCount + 1}</h4>
+                        <label class="flex items-center gap-2 text-red-600 cursor-pointer text-sm">
+                            <input type="checkbox" name="hero_images-${formCount}-DELETE" id="id_hero_images-${formCount}-DELETE">
+                            <span>Remove</span>
+                        </label>
+                    </div>
+                    <input type="hidden" name="hero_images-${formCount}-id" id="id_hero_images-${formCount}-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                            <input type="file" name="hero_images-${formCount}-image" id="id_hero_images-${formCount}-image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Caption</label>
+                            <input type="text" name="hero_images-${formCount}-caption" id="id_hero_images-${formCount}-caption" maxlength="200" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                            <input type="number" name="hero_images-${formCount}-display_order" id="id_hero_images-${formCount}-display_order" value="${formCount}" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="flex items-center gap-2 mt-6">
+                            <input type="checkbox" name="hero_images-${formCount}-is_active" id="id_hero_images-${formCount}-is_active" checked>
+                            <label for="id_hero_images-${formCount}-is_active" class="text-sm">Active</label>
+                        </div>
+                    </div>
+                `;
+                formset.appendChild(newForm);
+                totalForms.value = formCount + 1;
+            });
+        }
+        
+        // Add Team Member
+        const addTeamBtn = document.getElementById('add-team-member-btn');
+        if (addTeamBtn) {
+            addTeamBtn.addEventListener('click', function() {
+                const formset = document.getElementById('team-formset');
+                const totalForms = document.getElementById('id_team_members-TOTAL_FORMS');
+                const formCount = parseInt(totalForms.value);
+                
+                const newForm = document.createElement('div');
+                newForm.className = 'team-form border border-gray-300 rounded-lg p-4 bg-white shadow-sm';
+                newForm.id = 'team-form-' + formCount;
+                newForm.innerHTML = `
+                    <input type="hidden" name="team_members-${formCount}-id" id="id_team_members-${formCount}-id">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold text-lg">Team Member ${formCount + 1}</h3>
+                        <label class="flex items-center gap-2 text-red-600 cursor-pointer">
+                            <input type="checkbox" name="team_members-${formCount}-DELETE" id="id_team_members-${formCount}-DELETE">
+                            <span>Delete</span>
+                        </label>
+                    </div>
+                    <div class="mb-4 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <h4 class="font-medium text-sm mb-2">📷 Photo</h4>
+                        <input type="file" name="team_members-${formCount}-photo" id="id_team_members-${formCount}-photo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                            <input type="text" name="team_members-${formCount}-name" id="id_team_members-${formCount}-name" maxlength="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Role/Title</label>
+                            <input type="text" name="team_members-${formCount}-role_title" id="id_team_members-${formCount}-role_title" maxlength="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                        <textarea name="team_members-${formCount}-bio" id="id_team_members-${formCount}-bio" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Specialties</label>
+                        <input type="text" name="team_members-${formCount}-specialties" id="id_team_members-${formCount}-specialties" maxlength="300" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        <p class="text-gray-600 text-sm mt-1">Comma-separated list of specialties</p>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Credentials</label>
+                        <input type="text" name="team_members-${formCount}-credentials" id="id_team_members-${formCount}-credentials" maxlength="300" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        <p class="text-gray-600 text-sm mt-1">Certifications, degrees, licenses, etc.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
+                            <input type="number" name="team_members-${formCount}-display_order" id="id_team_members-${formCount}-display_order" value="${formCount}" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="flex items-center gap-2 mt-6">
+                            <input type="checkbox" name="team_members-${formCount}-is_active" id="id_team_members-${formCount}-is_active" checked>
+                            <label for="id_team_members-${formCount}-is_active">Active</label>
+                        </div>
+                    </div>
+                `;
+                formset.appendChild(newForm);
+                totalForms.value = formCount + 1;
+            });
+        }
+        
+        // Add Testimonial
+        const addTestimonialBtn = document.getElementById('add-testimonial-btn');
+        if (addTestimonialBtn) {
+            addTestimonialBtn.addEventListener('click', function() {
+                const formset = document.getElementById('testimonial-formset');
+                const totalForms = document.getElementById('id_testimonials-TOTAL_FORMS');
+                const formCount = parseInt(totalForms.value);
+                
+                const newForm = document.createElement('div');
+                newForm.className = 'testimonial-form border border-gray-300 rounded-lg p-4 bg-white shadow-sm';
+                newForm.id = 'testimonial-form-' + formCount;
+                newForm.innerHTML = `
+                    <input type="hidden" name="testimonials-${formCount}-id" id="id_testimonials-${formCount}-id">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold text-lg">Testimonial ${formCount + 1}</h3>
+                        <label class="flex items-center gap-2 text-red-600 cursor-pointer">
+                            <input type="checkbox" name="testimonials-${formCount}-DELETE" id="id_testimonials-${formCount}-DELETE">
+                            <span>Delete</span>
+                        </label>
+                    </div>
+                    <div class="mb-4 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                        <h4 class="font-medium text-sm mb-2">📷 Client Photo</h4>
+                        <input type="file" name="testimonials-${formCount}-client_photo" id="id_testimonials-${formCount}-client_photo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
+                            <input type="text" name="testimonials-${formCount}-client_name" id="id_testimonials-${formCount}-client_name" maxlength="100" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating (1-5)</label>
+                            <select name="testimonials-${formCount}-rating" id="id_testimonials-${formCount}-rating" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                                <option value="4">⭐⭐⭐⭐ (4)</option>
+                                <option value="3">⭐⭐⭐ (3)</option>
+                                <option value="2">⭐⭐ (2)</option>
+                                <option value="1">⭐ (1)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Testimonial Text</label>
+                        <textarea name="testimonials-${formCount}-testimonial_text" id="id_testimonials-${formCount}-testimonial_text" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required></textarea>
+                    </div>
+                    <div class="flex gap-6 mt-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="testimonials-${formCount}-is_featured" id="id_testimonials-${formCount}-is_featured">
+                            <span>Featured testimonial</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" name="testimonials-${formCount}-is_active" id="id_testimonials-${formCount}-is_active" checked>
+                            <span>Active</span>
+                        </label>
+                    </div>
+                `;
+                formset.appendChild(newForm);
+                totalForms.value = formCount + 1;
+            });
+        }
+    });
+</script>
+{% endblock %}
