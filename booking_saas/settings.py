@@ -278,7 +278,7 @@ OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 
 # CSRF Trusted Origins (Required for Railway)
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-200fb.up.railway.app',
+    'https://gastric-gazelle-abhishekmishra-d93b010d.koyeb.app/',
     'https://*.railway.app',
     'https://nextslot.in',
     'https://www.nextslot.in',
@@ -291,3 +291,4 @@ import os
 if os.environ.get('RAILWAY_ENVIRONMENT'):
     ALLOWED_HOSTS = ['*']
     DEBUG = False
+#github testing 
