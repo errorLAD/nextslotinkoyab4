@@ -30,9 +30,13 @@ def custom_domain_page(request):
     # Get provider-specific DNS configuration
     dns_config = get_dns_config_for_provider(provider) if provider.custom_domain else None
     
+    # HOSTING_DOMAIN is the actual server (Koyeb URL) where CNAME should point
+    hosting_domain = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
+    
     context = {
         'provider': provider,
         'default_domain': settings.DEFAULT_DOMAIN,
+        'hosting_domain': hosting_domain,
         'is_pro': is_pro,
         'dns_config': dns_config,
     }
@@ -59,9 +63,13 @@ def domain_settings(request):
     # Get provider-specific DNS configuration
     dns_config = get_dns_config_for_provider(provider) if provider.custom_domain else None
     
+    # HOSTING_DOMAIN is the actual server (Koyeb URL) where CNAME should point
+    hosting_domain = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
+    
     context = {
         'provider': provider,
         'default_domain': settings.DEFAULT_DOMAIN,
+        'hosting_domain': hosting_domain,
         'is_pro': is_pro,
         'dns_config': dns_config,
     }

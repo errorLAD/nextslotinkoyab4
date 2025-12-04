@@ -376,8 +376,8 @@
                             </small>
                         </td>
                         <td>
-                            <code class="bg-success text-white p-2 rounded fs-5" id="cname-target">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ default_domain }}{% endif %}</code>
-                            <button class="copy-btn ms-2" onclick="copyToClipboard('{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ default_domain }}{% endif %}', this)">
+                            <code class="bg-success text-white p-2 rounded fs-5" id="cname-target">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ hosting_domain }}{% endif %}</code>
+                            <button class="copy-btn ms-2" onclick="copyToClipboard('{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ hosting_domain }}{% endif %}', this)">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                         </td>
@@ -423,7 +423,7 @@
                             <li>Click <strong>"Add record"</strong></li>
                             <li>Type: Select <code>CNAME</code></li>
                             <li>Name: Enter <code class="bg-warning px-2 py-1 rounded">{% if dns_config %}{{ dns_config.subdomain }}{% else %}{{ provider.custom_domain|get_subdomain }}{% endif %}</code></li>
-                            <li>Target: Enter <code class="bg-light px-2 py-1 rounded">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ default_domain }}{% endif %}</code></li>
+                            <li>Target: Enter <code class="bg-light px-2 py-1 rounded">{% if dns_config %}{{ dns_config.cname.target }}{% else %}{{ hosting_domain }}{% endif %}</code></li>
                             <li>Proxy status: <strong class="text-warning">☁️ Proxied (Orange cloud ON)</strong></li>
                             <li>Click <strong>Save</strong></li>
                         </ul>
