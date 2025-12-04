@@ -30,7 +30,7 @@ def custom_domain_page(request):
     # Get provider-specific DNS configuration
     dns_config = get_dns_config_for_provider(provider) if provider.custom_domain else None
     
-    # HOSTING_DOMAIN is the actual server (Koyeb URL) where CNAME should point
+    # HOSTING_DOMAIN is the actual server (DigitalOcean App Platform URL) where CNAME should point
     hosting_domain = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
     
     context = {
@@ -63,7 +63,7 @@ def domain_settings(request):
     # Get provider-specific DNS configuration
     dns_config = get_dns_config_for_provider(provider) if provider.custom_domain else None
     
-    # HOSTING_DOMAIN is the actual server (Koyeb URL) where CNAME should point
+    # HOSTING_DOMAIN is the actual server (DigitalOcean App Platform URL) where CNAME should point
     hosting_domain = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
     
     context = {

@@ -16,15 +16,16 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1 , gastric-gazelle-abhishekmishra-d93b010d.koyeb.app').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
 # Domain configuration
 DEFAULT_DOMAIN = config('DEFAULT_DOMAIN', default='yourdomain.com')
 DEFAULT_SCHEME = config('DEFAULT_SCHEME', default='https')
 
-# Hosting server domain (where the app is actually hosted - Koyeb, Railway, etc.)
+# Hosting server domain (where the app is actually hosted - DigitalOcean App Platform)
 # This is used as the CNAME target for custom domains
-HOSTING_DOMAIN = config('HOSTING_DOMAIN', default='gastric-gazelle-abhishekmishra-d93b010d.koyeb.app')
+# Format: your-app-name.ondigitalocean.app
+HOSTING_DOMAIN = config('HOSTING_DOMAIN', default='your-app.ondigitalocean.app')
 
 # Cloudflare Configuration (for custom domain SSL & DNS)
 CLOUDFLARE_API_TOKEN = config('CLOUDFLARE_API_TOKEN', default='')
@@ -108,15 +109,18 @@ WSGI_APPLICATION = 'booking_saas.wsgi.application'
 DB_ENGINE = config('DB_ENGINE', default='django.db.backends.sqlite3')
 
 if 'postgresql' in DB_ENGINE:
-    # PostgreSQL configuration (Railway)
+    # PostgreSQL configuration (DigitalOcean Managed Database)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', default='railway'),
-            'USER': config('DB_USER', default='postgres'),
+            'NAME': config('DB_NAME', default='defaultdb'),
+            'USER': config('DB_USER', default='doadmin'),
             'PASSWORD': config('DB_PASSWORD', default=''),
             'HOST': config('DB_HOST', default='localhost'),
-            'PORT': config('DB_PORT', default='5432'),
+            'PORT': config('DB_PORT', default='25060'),
+            'OPTIONS': {
+                'sslmode': config('DB_SSLMODE', default='require'),
+            },
         }
     }
 else:
@@ -285,11 +289,10 @@ GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
 # OpenAI API (AI Features)
 OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
 
-# CSRF Trusted Origins (Required for Railway and Custom Domains)
+# CSRF Trusted Origins (Required for DigitalOcean and Custom Domains)
 # Base trusted origins - always trusted
 CSRF_TRUSTED_ORIGINS = [
-    'https://gastric-gazelle-abhishekmishra-d93b010d.koyeb.app',
-    'https://*.railway.app',
+    'https://*.ondigitalocean.app',
     'https://nextslot.in',
     'https://www.nextslot.in',
     'http://localhost:8000',
@@ -299,9 +302,9 @@ CSRF_TRUSTED_ORIGINS = [
 # For custom domains, we use a custom CSRF middleware that dynamically checks
 # verified domains from the database. This is handled in providers.middleware
 
-# Allow all hosts in Railway (Railway handles this via proxy)
+# Allow all hosts in DigitalOcean App Platform (App Platform handles this via proxy)
 import os
-if os.environ.get('RAILWAY_ENVIRONMENT'):
+if os.environ.get('DIGITALOCEAN_APP_PLATFORM'):
     ALLOWED_HOSTS = ['*']
     DEBUG = False
 #github testing 

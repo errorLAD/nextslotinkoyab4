@@ -58,7 +58,7 @@ def get_dns_config_for_provider(provider):
     # Generate unique provider identifier for DNS
     provider_unique_id = generate_provider_unique_id(provider.id)
     
-    # CNAME target - should point to the HOSTING server (Koyeb, Railway, etc.)
+    # CNAME target - should point to the HOSTING server (DigitalOcean App Platform)
     cname_target = getattr(settings, 'HOSTING_DOMAIN', settings.DEFAULT_DOMAIN)
     
     # TXT verification record - unique per provider

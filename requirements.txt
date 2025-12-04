@@ -4,7 +4,7 @@ Pillow>=10.1.0
 python-decouple>=3.8
 pytz>=2023.3
 
-# Database - use psycopg2-binary for Railway
+# Database - use psycopg2-binary for DigitalOcean
 psycopg2-binary>=2.9.9
 
 # Caching & Task Queue

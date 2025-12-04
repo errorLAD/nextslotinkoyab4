@@ -144,7 +144,7 @@ class CustomDomainMiddleware:
         hosting_domain = getattr(settings, 'HOSTING_DOMAIN', '').lower()
         default_domain = getattr(settings, 'DEFAULT_DOMAIN', '').lower()
         
-        # Skip if it's the hosting domain (Koyeb, Railway, etc.)
+        # Skip if it's the hosting domain (DigitalOcean App Platform)
         if host == hosting_domain or host.endswith(f'.{hosting_domain}'):
             return self.get_response(request)
         
