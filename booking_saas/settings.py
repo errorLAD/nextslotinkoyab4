@@ -297,6 +297,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.nextslot.in',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'urbanunit.in'
 ]
 
 # For custom domains, we use a custom CSRF middleware that dynamically checks
